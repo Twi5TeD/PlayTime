@@ -19,7 +19,6 @@ public class Main extends JavaPlugin implements Listener {
 		Bukkit.getServer().getPluginManager().registerEvents(new PlayTime(this), this);
 		getCommand("playtime").setExecutor(new PlayTime(this));
 		getCommand("serveruptime").setExecutor(new PlayTime(this));
-		getCommand("playtimereload").setExecutor(new PlayTime(this));
 		  FileConfiguration c = PlayTime.PlayTimeConfig.getConfig();
 			second = PlayTime.format(c.getString("time.second"));
 			minute = PlayTime.format(c.getString("time.minute"));
