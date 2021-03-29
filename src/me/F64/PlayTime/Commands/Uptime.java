@@ -21,9 +21,9 @@ public class Uptime implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        FileConfiguration c = PlayTime.PlayTimeConfig.getConfig();
         if (sender instanceof Player) {
             Player p = (Player) sender;
+            FileConfiguration c = PlayTime.PlayTimeConfig.getConfig();
             if(cmd.getName().equalsIgnoreCase("serveruptime")) {
                 if (!(sender.hasPermission("playtime.uptime"))) {
                     for (String NoPermission : c.getStringList("messages.no_permission"))
@@ -36,4 +36,5 @@ public class Uptime implements CommandExecutor {
         }
         return true;
     }
+
 }
