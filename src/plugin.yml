@@ -1,6 +1,6 @@
 name: PlayTime
 author: F64_Rx
-version: 2.6
+version: 2.7
 description: allows player to see how much they have played for.
 main: me.F64.PlayTime.Main
 depend: [PlaceholderAPI]
@@ -10,6 +10,10 @@ commands:
     usage: /<command>
     aliases: [timeplayed, pt]
     description: Shows the playtime of a player!
+  playtimetop:
+    usage: /<command>
+    aliases: [timeplayedtop, ptt]
+    description: Shows the playtime of top 10 players!
   serveruptime:
     usage: /<command>
     aliases: [uptime, sp]

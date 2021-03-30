@@ -14,7 +14,6 @@ public class ConfigWrapper {
     private File configFile;
     private final String folderName;
     private final String fileName;
-
     public ConfigWrapper(JavaPlugin instance, String folderName, String fileName) {
         this.plugin = instance;
         this.folderName = folderName;

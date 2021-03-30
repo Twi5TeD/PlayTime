@@ -1,17 +1,15 @@
 package me.F64.PlayTime.PlaceholderAPI;
 
-import me.F64.PlayTime.Main;
-import me.F64.PlayTime.Commands.PlayTime;
-import me.F64.PlayTime.Utils.TimeFormat;
-import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 
+import me.F64.PlayTime.Main;
+import me.F64.PlayTime.Utils.Chat;
+import me.F64.PlayTime.Utils.TimeFormat;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+
 public class Expansion extends PlaceholderExpansion {
-
     private Main plugin;
-
     public Expansion(Main plugin){
         this.plugin = plugin;
     }
@@ -50,7 +48,7 @@ public class Expansion extends PlaceholderExpansion {
             return String.valueOf(p.getName());
         }
         if (identifier.equals("time")) {
-            return String.valueOf(TimeFormat.getTime(PlayTime.TicksPlayed(p)));
+            return String.valueOf(TimeFormat.getTime(Chat.TicksPlayed(p)));
         }
         if (identifier.equals("timesjoined")) {
             return String.valueOf(p.getStatistic(Statistic.LEAVE_GAME) + 1);

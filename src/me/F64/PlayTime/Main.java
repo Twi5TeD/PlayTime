@@ -1,6 +1,5 @@
 package me.F64.PlayTime;
 
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -23,8 +22,10 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import me.F64.PlayTime.Commands.PlayTime;
+import me.F64.PlayTime.Commands.PlayTimeTop;
 import me.F64.PlayTime.Commands.Uptime;
 import me.F64.PlayTime.PlaceholderAPI.Expansion;
+import me.F64.PlayTime.Utils.Chat;
 
 public class Main extends JavaPlugin implements Listener {
     public static Plugin plugin;
@@ -32,21 +33,20 @@ public class Main extends JavaPlugin implements Listener {
     public static String minute;
     public static String hour;
     public static String day;
-    private final String storagePath = getDataFolder() + "/userdata.json";
+    public String storagePath = getDataFolder() + "/userdata.json";
 
     @Override
     public void onEnable() {
         plugin = this;
-        Bukkit.getServer().getPluginManager().registerEvents(new PlayTime(this), this);
         getCommand("playtime").setExecutor(new PlayTime(this));
         getCommand("serveruptime").setExecutor(new Uptime(this));
+        getCommand("playtimetop").setExecutor(new PlayTimeTop(this));
         checkStorage();
         FileConfiguration c = PlayTime.PlayTimeConfig.getConfig();
-        second = PlayTime.format(c.getString("time.second"));
-        minute = PlayTime.format(c.getString("time.minute"));
-        hour = PlayTime.format(c.getString("time.hour"));
-        day = PlayTime.format(c.getString("time.day"));
-
+        second = Chat.format(c.getString("time.second"));
+        minute = Chat.format(c.getString("time.minute"));
+        hour = Chat.format(c.getString("time.hour"));
+        day = Chat.format(c.getString("time.day"));
         if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
             new Expansion(this).register();
             Bukkit.getPluginManager().registerEvents(this, this);
@@ -61,12 +61,16 @@ public class Main extends JavaPlugin implements Listener {
         getServer().getOnlinePlayers().forEach(this::savePlayer);
     }
 
-    private void checkStorage() {
-        File pluginDirectory = getDataFolder();
-        if (!pluginDirectory.exists()) {
-            pluginDirectory.mkdirs();
-        }
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        savePlayer(event.getPlayer());
+    }
 
+    private void checkStorage() {
+        File pluginFolder = getDataFolder();
+        if (!pluginFolder.exists()) {
+            pluginFolder.mkdirs();
+        }
         File userdataFile = new File(storagePath);
         if (!userdataFile.exists()) {
             try {
@@ -84,7 +88,7 @@ public class Main extends JavaPlugin implements Listener {
         JSONObject target = new JSONObject();
         target.put("uuid", player.getUniqueId().toString());
         target.put("lastName", player.getDisplayName());
-        target.put("time", Integer.valueOf(PlayTime.TicksPlayed(player)));
+        target.put("time", Integer.valueOf(Chat.TicksPlayed(player)));
         target.put("joins", Integer.valueOf(player.getStatistic(Statistic.LEAVE_GAME) + 1));
         writePlayer(target);
     }
@@ -95,7 +99,6 @@ public class Main extends JavaPlugin implements Listener {
         try {
             FileReader reader = new FileReader(storagePath);
             JSONArray players = (JSONArray) jsonParser.parse(reader);
-
             List<JSONObject> list = new ArrayList<>();
             for (Object player : players) {
                 JSONObject player_JSON = (JSONObject) player;
@@ -110,10 +113,8 @@ public class Main extends JavaPlugin implements Listener {
                 }
             }
             list.add(target);
-
             JSONArray sortedPlayers = new JSONArray();
             sortedPlayers.addAll(list);
-
             FileWriter writer = new FileWriter(storagePath);
             writer.write(sortedPlayers.toJSONString());
             writer.flush();
@@ -121,44 +122,5 @@ public class Main extends JavaPlugin implements Listener {
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
-    }
-
-    public String getPlayerTime(String name) {
-        JSONParser jsonParser = new JSONParser();
-        try {
-            FileReader reader = new FileReader(storagePath);
-            JSONArray players = (JSONArray) jsonParser.parse(reader);
-            for (Object o : players) {
-                JSONObject player = (JSONObject) o;
-                if (player.get("lastName").equals(name)) {
-                    return player.get("time").toString();
-                }
-            }
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public String getPlayerJoins(String name) {
-        JSONParser jsonParser = new JSONParser();
-        try {
-            FileReader reader = new FileReader(storagePath);
-            JSONArray players = (JSONArray) jsonParser.parse(reader);
-            for (Object o : players) {
-                JSONObject player = (JSONObject) o;
-                if (player.get("lastName").equals(name)) {
-                    return player.get("joins").toString();
-                }
-            }
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        savePlayer(event.getPlayer());
     }
 }   
