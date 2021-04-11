@@ -1,6 +1,6 @@
 name: PlayTime
 author: F64_Rx
-version: 2.7
+version: 2.8
 description: allows player to see how much they have played for.
 main: me.F64.PlayTime.Main
 depend: [PlaceholderAPI]
