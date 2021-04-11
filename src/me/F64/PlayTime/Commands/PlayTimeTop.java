@@ -76,7 +76,7 @@ public class PlayTimeTop implements CommandExecutor {
     private TopPlayers[] checkOnlinePlayers(TopPlayers[] top10) {
         for (Player p : plugin.getServer().getOnlinePlayers()) {
             if (Chat.TicksPlayed(p) > top10[9].time) {
-                TopPlayers Player = new TopPlayers(p.getDisplayName(), p.getUniqueId().toString(), Chat.TicksPlayed(p));
+                TopPlayers Player = new TopPlayers(p.getName(), p.getUniqueId().toString(), Chat.TicksPlayed(p));
                 for (int i = 0; i < 10; i++) {
                     if (top10[i].time < Player.time) {
                         if (top10[i].uuid.equals(Player.uuid)) {

@@ -21,7 +21,7 @@ public class Chat {
         sender.sendMessage(PlaceholderAPI.setPlaceholders(p, Chat.format(message)));
         return message;
     }
-    
+
     public static int TicksPlayed(Player p) {
         if(!Compatibility.isLegacy()) {
             return  p.getStatistic(Statistic.valueOf("PLAY_ONE_MINUTE"))/20;

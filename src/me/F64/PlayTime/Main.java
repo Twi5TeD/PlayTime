@@ -26,6 +26,7 @@ import me.F64.PlayTime.Commands.PlayTimeTop;
 import me.F64.PlayTime.Commands.Uptime;
 import me.F64.PlayTime.PlaceholderAPI.Expansion;
 import me.F64.PlayTime.Utils.Chat;
+import me.F64.PlayTime.Utils.UpdateChecker;
 
 public class Main extends JavaPlugin implements Listener {
     public static Plugin plugin;
@@ -48,12 +49,20 @@ public class Main extends JavaPlugin implements Listener {
         hour = Chat.format(c.getString("time.hour"));
         day = Chat.format(c.getString("time.day"));
         if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
+            Bukkit.getConsoleSender().sendMessage(Chat.format("&7[PlayTime] &bPlaceholderAPI &awas found&7! Registering Placeholders."));
             new Expansion(this).register();
             Bukkit.getPluginManager().registerEvents(this, this);
         } else {
-            getLogger().warning("Could not find PlaceholderAPI! This plugin is required.");
+            Bukkit.getConsoleSender().sendMessage(Chat.format("&7[PlayTime] &bPlaceholderAPI &cwas not found&7! Disabling Plugin."));
             Bukkit.getPluginManager().disablePlugin(this);
         }
+        new UpdateChecker(this, 26016).getVersion(version -> {
+            if (getDescription().getVersion().equalsIgnoreCase(version)) {
+                Bukkit.getConsoleSender().sendMessage(Chat.format("&7[PlayTime] Latest version is &ainstalled&7! - v" + getDescription().getVersion()));
+            } else {
+                Bukkit.getConsoleSender().sendMessage(Chat.format("&7[PlayTime] Latest version is &cnot installed&7! - v" + version));
+            }
+        });
     }
 
     @Override
@@ -87,7 +96,7 @@ public class Main extends JavaPlugin implements Listener {
     public void savePlayer(Player player) {
         JSONObject target = new JSONObject();
         target.put("uuid", player.getUniqueId().toString());
-        target.put("lastName", player.getDisplayName());
+        target.put("lastName", player.getName());
         target.put("time", Integer.valueOf(Chat.TicksPlayed(player)));
         target.put("joins", Integer.valueOf(player.getStatistic(Statistic.LEAVE_GAME) + 1));
         writePlayer(target);
