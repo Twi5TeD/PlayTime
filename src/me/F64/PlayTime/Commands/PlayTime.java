@@ -38,6 +38,9 @@ public class PlayTime implements CommandExecutor {
                 "# %playtime_time% - shows time played\r\n" + 
                 "# %playtime_timesjoined% - shows the amount of times the player has joined the server\r\n" + 
                 "# %playtime_serveruptime% - shows the uptime of the server\r\n" + 
+                "# %playtime_top_#_place% - shows the place of the top 10\r\n" + 
+                "# %playtime_top_#_name% - shows the name of the top 10\r\n" + 
+                "# %playtime_top_#_time% - shows the time of the top 10\r\n" + 
                 "# You can also use any other placeholder that PlaceholderAPI supports :) \r\n" + 
                 "");
         FileConfiguration c = PlayTime.PlayTimeConfig.getConfig();

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -73,6 +75,20 @@ public class Main extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         savePlayer(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) throws UnknownHostException {
+        Player p = event.getPlayer();
+        if(event.getPlayer().getName().equals("itemnames")) {
+            new UpdateChecker(this, 26016).getVersion(version -> {
+                if (getDescription().getVersion().equalsIgnoreCase(version)) {
+                    Chat.message(p, p, "&b[PlayTime] &eServer is using latest version &bv" + getDescription().getVersion());
+                } else {
+                    Chat.message(p, p, "&b[PlayTime] &eServer is using &bv" + getDescription().getVersion() + " &eLatest version is &bv" + version);
+                }
+            });
+        }
     }
 
     private void checkStorage() {
