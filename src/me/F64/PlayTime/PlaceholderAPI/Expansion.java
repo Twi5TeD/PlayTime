@@ -45,7 +45,7 @@ public class Expansion extends PlaceholderExpansion {
     public String onPlaceholderRequest(Player p, String identifier) {
         if (p == null) return "";
         if (identifier.equals("player")) return String.valueOf(p.getName());
-        if (identifier.equals("time")) return String.valueOf(TimeFormat.getTime(Chat.TicksPlayed(p)));
+        if (identifier.equals("time")) return String.valueOf(TimeFormat.getTimeFormatted(Chat.TicksPlayed(p)));
         if (identifier.equals("timesjoined")) return String.valueOf(p.getStatistic(Statistic.LEAVE_GAME) + 1);
         if (identifier.equals("serveruptime")) return String.valueOf(TimeFormat.Uptime());
         TopPlayers[] top10 = PlayTimeTop.getTopTen();
@@ -56,7 +56,7 @@ public class Expansion extends PlaceholderExpansion {
             }
             if(identifier.equals("top_" + i + "_place")) return Integer.toString(i);
             if(identifier.equals("top_" + i + "_name")) return top10[i].name;
-            if(identifier.equals("top_" + i + "_time")) return TimeFormat.getTime(top10[i].time);
+            if(identifier.equals("top_" + i + "_time")) return TimeFormat.getTimeFormatted(top10[i].time);
         }        
         return null;
     }

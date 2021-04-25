@@ -43,7 +43,7 @@ public class PlayTimeTop implements CommandExecutor {
                         break;
                     }
                     for(String message : c.getStringList("messages.playtimetop.message"))
-                        Chat.message(sender, p, message.replace("%position%", Integer.toString(i)).replace("%player%", top10[i].name).replace("%playtime%", TimeFormat.getTime(top10[i].time)));
+                        Chat.message(sender, p, message.replace("%position%", Integer.toString(i)).replace("%player%", top10[i].name).replace("%playtime%", TimeFormat.getTimeFormatted(top10[i].time)));
                 }
                 for(String footer : c.getStringList("messages.playtimetop.footer"))
                     Chat.message(sender, p, footer);
@@ -54,7 +54,7 @@ public class PlayTimeTop implements CommandExecutor {
 
     public static TopPlayers[] getTopTen() {
         TopPlayers[] topTen = new TopPlayers[11];
-        for (int i = 1; i < 11; i++)
+        for (int i = 0; i < 11; i++)
             topTen[i] = new TopPlayers();
         try {
             JSONParser jsonParser = new JSONParser();
@@ -62,7 +62,7 @@ public class PlayTimeTop implements CommandExecutor {
             JSONArray players = (JSONArray) jsonParser.parse(reader);
             if (players.size() > 0) {
                 for (int i = 1; (i < 11) && (i < players.size()); i++) {
-                    JSONObject player = (JSONObject) players.get(i);
+                    JSONObject player = (JSONObject) players.get(i-1);
                     TopPlayers target = new TopPlayers(player.get("lastName").toString(), player.get("uuid").toString(), Integer.parseInt(player.get("time").toString()));
                     topTen[i] = target;
                 }
@@ -76,16 +76,16 @@ public class PlayTimeTop implements CommandExecutor {
     public static TopPlayers[] checkOnlinePlayers(TopPlayers[] top10) {
         for (Player p : plugin.getServer().getOnlinePlayers()) {
             if (Chat.TicksPlayed(p) > top10[10].time) {
-                TopPlayers Player = new TopPlayers(p.getName(), p.getUniqueId().toString(), Chat.TicksPlayed(p));
+                TopPlayers player = new TopPlayers(p.getName(), p.getUniqueId().toString(), Chat.TicksPlayed(p));
                 for (int i = 1; i < 11; i++) {
-                    if (top10[i].time < Player.time) {
-                        if (top10[i].uuid.equals(Player.uuid)) {
-                            top10[i] = Player;
+                    if (top10[i].time < player.time) {
+                        if (top10[i].uuid.equals(player.uuid)) {
+                            top10[i] = player;
                             break;
                         } else {
                             TopPlayers temp = top10[i];
-                            top10[i] = Player;
-                            Player = temp;
+                            top10[i] = player;
+                            player = temp;
                         }
                     }
                 }

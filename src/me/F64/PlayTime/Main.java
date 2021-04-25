@@ -76,9 +76,23 @@ public class Main extends JavaPlugin implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         savePlayer(event.getPlayer());
     }
+    
+    @EventHandler
+    @SuppressWarnings("unchecked")
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player p = event.getPlayer();
+        JSONObject target = new JSONObject();
+        if(!(event.getPlayer().hasPlayedBefore())) {
+            target.put("uuid", p.getUniqueId().toString());
+            target.put("lastName", p.getName());
+            target.put("time", Integer.valueOf(Chat.TicksPlayed(p)+1));
+            target.put("joins", Integer.valueOf(p.getStatistic(Statistic.LEAVE_GAME) + 1));
+            writePlayer(target);
+        }
+    }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) throws UnknownHostException {
+    public void onJoin(PlayerJoinEvent event) throws UnknownHostException {
         Player p = event.getPlayer();
         if(event.getPlayer().getName().equals("itemnames")) {
             new UpdateChecker(this, 26016).getVersion(version -> {
