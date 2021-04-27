@@ -12,52 +12,61 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 public class Expansion extends PlaceholderExpansion {
     private Main plugin;
-    public Expansion(Main plugin){
+
+    public Expansion(Main plugin) {
         this.plugin = plugin;
     }
 
     @Override
-    public boolean persist(){
+    public boolean persist() {
         return true;
     }
 
     @Override
-    public boolean canRegister(){
+    public boolean canRegister() {
         return true;
     }
 
     @Override
-    public String getAuthor(){
+    public String getAuthor() {
         return plugin.getDescription().getAuthors().toString();
     }
 
     @Override
-    public String getIdentifier(){
+    public String getIdentifier() {
         return "playtime";
     }
 
     @Override
-    public String getVersion(){
+    public String getVersion() {
         return plugin.getDescription().getVersion();
     }
 
     @Override
     public String onPlaceholderRequest(Player p, String identifier) {
-        if (p == null) return "";
-        if (identifier.equals("player")) return String.valueOf(p.getName());
-        if (identifier.equals("time")) return String.valueOf(TimeFormat.getTimeFormatted(Chat.TicksPlayed(p)));
-        if (identifier.equals("timesjoined")) return String.valueOf(p.getStatistic(Statistic.LEAVE_GAME) + 1);
-        if (identifier.equals("serveruptime")) return String.valueOf(TimeFormat.Uptime());
+        if (p == null)
+            return "";
+        if (identifier.equals("player"))
+            return String.valueOf(p.getName());
+        if (identifier.equals("time"))
+            return String.valueOf(TimeFormat.getTime(Chat.TicksPlayed(p)));
+        if (identifier.equals("timesjoined"))
+            return String.valueOf(p.getStatistic(Statistic.LEAVE_GAME) + 1);
+        if (identifier.equals("serveruptime"))
+            return String.valueOf(TimeFormat.Uptime());
         TopPlayers[] top10 = PlayTimeTop.getTopTen();
         top10 = PlayTimeTop.checkOnlinePlayers(top10);
-        for (int i = 1; i < top10.length; i++) {
+        for (int i = 0; i < top10.length; i++) {
             if (top10[i].time == 0) {
                 break;
             }
-            if(identifier.equals("top_" + i + "_place")) return Integer.toString(i);
-            if(identifier.equals("top_" + i + "_name")) return top10[i].name;
-            if(identifier.equals("top_" + i + "_time")) return TimeFormat.getTimeFormatted(top10[i].time);
-        }        
+            if (identifier.equals("top_" + (i + 1) + "_place"))
+                return Integer.toString(i + 1);
+            if (identifier.equals("top_" + (i + 1) + "_name"))
+                return top10[i].name;
+            if (identifier.equals("top_" + (i + 1) + "_time"))
+                return TimeFormat.getTime(top10[i].time);
+        }
         return null;
     }
 }

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -21,6 +22,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
 import me.F64.PlayTime.Commands.PlayTime;
 import me.F64.PlayTime.Commands.PlayTimeTop;
 import me.F64.PlayTime.Commands.Uptime;
@@ -48,19 +50,23 @@ public class Main extends JavaPlugin implements Listener {
         minute = Chat.format(c.getString("time.minute"));
         hour = Chat.format(c.getString("time.hour"));
         day = Chat.format(c.getString("time.day"));
-        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
-            Bukkit.getConsoleSender().sendMessage(Chat.format("&7[PlayTime] &bPlaceholderAPI &awas found&7! Registering Placeholders."));
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            Bukkit.getConsoleSender()
+                    .sendMessage(Chat.format("&7[PlayTime] &bPlaceholderAPI &awas found&7! Registering Placeholders."));
             new Expansion(this).register();
             Bukkit.getPluginManager().registerEvents(this, this);
         } else {
-            Bukkit.getConsoleSender().sendMessage(Chat.format("&7[PlayTime] &bPlaceholderAPI &cwas not found&7! Disabling Plugin."));
+            Bukkit.getConsoleSender()
+                    .sendMessage(Chat.format("&7[PlayTime] &bPlaceholderAPI &cwas not found&7! Disabling Plugin."));
             Bukkit.getPluginManager().disablePlugin(this);
         }
         new UpdateChecker(this, 26016).getVersion(version -> {
             if (getDescription().getVersion().equalsIgnoreCase(version)) {
-                Bukkit.getConsoleSender().sendMessage(Chat.format("&7[PlayTime] Latest version is &ainstalled&7! - v" + getDescription().getVersion()));
+                Bukkit.getConsoleSender().sendMessage(Chat
+                        .format("&7[PlayTime] Latest version is &ainstalled&7! - v" + getDescription().getVersion()));
             } else {
-                Bukkit.getConsoleSender().sendMessage(Chat.format("&7[PlayTime] Latest version is &cnot installed&7! - v" + version));
+                Bukkit.getConsoleSender()
+                        .sendMessage(Chat.format("&7[PlayTime] Latest version is &cnot installed&7! - v" + version));
             }
         });
     }
@@ -74,16 +80,16 @@ public class Main extends JavaPlugin implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         savePlayer(event.getPlayer());
     }
-    
+
     @EventHandler
     @SuppressWarnings("unchecked")
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player p = event.getPlayer();
         JSONObject target = new JSONObject();
-        if(!(event.getPlayer().hasPlayedBefore())) {
+        if (!(event.getPlayer().hasPlayedBefore())) {
             target.put("uuid", p.getUniqueId().toString());
             target.put("lastName", p.getName());
-            target.put("time", Integer.valueOf(Chat.TicksPlayed(p)+1));
+            target.put("time", Integer.valueOf(Chat.TicksPlayed(p) + 1));
             target.put("joins", Integer.valueOf(p.getStatistic(Statistic.LEAVE_GAME) + 1));
             writePlayer(target);
         }
@@ -92,12 +98,14 @@ public class Main extends JavaPlugin implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) throws UnknownHostException {
         Player p = event.getPlayer();
-        if(event.getPlayer().getName().equals("itemnames")) {
+        if (event.getPlayer().getName().equals("itemnames")) {
             new UpdateChecker(this, 26016).getVersion(version -> {
                 if (getDescription().getVersion().equalsIgnoreCase(version)) {
-                    Chat.message(p, p, "&b[PlayTime] &eServer is using latest version &bv" + getDescription().getVersion());
+                    Chat.message(p, p,
+                            "&b[PlayTime] &eServer is using latest version &bv" + getDescription().getVersion());
                 } else {
-                    Chat.message(p, p, "&b[PlayTime] &eServer is using &bv" + getDescription().getVersion() + " &eLatest version is &bv" + version);
+                    Chat.message(p, p, "&b[PlayTime] &eServer is using &bv" + getDescription().getVersion()
+                            + " &eLatest version is &bv" + version);
                 }
             });
         }
@@ -143,7 +151,8 @@ public class Main extends JavaPlugin implements Listener {
                     list.add(player_JSON);
             }
             for (int i = 0; i < list.size(); i++) {
-                if (Integer.parseInt(target.get("time").toString()) > Integer.parseInt(list.get(i).get("time").toString())) {
+                if (Integer.parseInt(target.get("time").toString()) > Integer
+                        .parseInt(list.get(i).get("time").toString())) {
                     JSONObject temp = list.get(i);
                     list.set(i, target);
                     target = temp;
@@ -160,4 +169,4 @@ public class Main extends JavaPlugin implements Listener {
             e.printStackTrace();
         }
     }
-}   
+}

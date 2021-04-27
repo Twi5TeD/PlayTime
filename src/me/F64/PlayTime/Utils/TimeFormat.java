@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import me.F64.PlayTime.Main;
 
 public class TimeFormat {
-    public static  String getTimeFormatted(int seconds) {
+    public static String getTime(int seconds) {
         if (seconds < 60) {
             return seconds + Main.second;
         }
@@ -57,7 +57,8 @@ public class TimeFormat {
         return time;
     }
 
-    public static  String Uptime() {
-        return TimeFormat.getTimeFormatted((int) TimeUnit.MILLISECONDS.toSeconds(ManagementFactory.getRuntimeMXBean().getUptime()));
+    public static String Uptime() {
+        return TimeFormat
+                .getTime((int) TimeUnit.MILLISECONDS.toSeconds(ManagementFactory.getRuntimeMXBean().getUptime()));
     }
 }

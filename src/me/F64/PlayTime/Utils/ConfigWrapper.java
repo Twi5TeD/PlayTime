@@ -14,6 +14,7 @@ public class ConfigWrapper {
     private File configFile;
     private final String folderName;
     private final String fileName;
+
     public ConfigWrapper(JavaPlugin instance, String folderName, String fileName) {
         this.plugin = instance;
         this.folderName = folderName;
@@ -45,7 +46,8 @@ public class ConfigWrapper {
     public void reloadConfig() {
         if (this.configFile == null) {
             if ((this.folderName != null) && (!this.folderName.isEmpty())) {
-                this.configFile = new File(this.plugin.getDataFolder() + File.separator + this.folderName, this.fileName);
+                this.configFile = new File(this.plugin.getDataFolder() + File.separator + this.folderName,
+                        this.fileName);
             } else {
                 this.configFile = new File(this.plugin.getDataFolder(), this.fileName);
             }
