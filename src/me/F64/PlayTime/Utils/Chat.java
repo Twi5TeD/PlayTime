@@ -15,8 +15,8 @@ public class Chat {
         plugin = instance;
     }
 
-    public static String format(String format) {
-        return ChatColor.translateAlternateColorCodes('&', format);
+    public static String format(String s) {
+        return ChatColor.translateAlternateColorCodes('&', s);
     }
 
     public static String message(CommandSender sender, Player p, String message) {

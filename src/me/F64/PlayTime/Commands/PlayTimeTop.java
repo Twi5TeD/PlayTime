@@ -46,8 +46,8 @@ public class PlayTimeTop implements CommandExecutor {
                     for (String message : c.getStringList("messages.playtimetop.message"))
                         Chat.message(sender, p,
                                 message.replace("%position%", Integer.toString(i + 1))
-                                        .replace("%player%", top10[i].name)
-                                        .replace("%playtime%", TimeFormat.getTime(top10[i].time)));
+                                .replace("%player%", top10[i].name)
+                                .replace("%playtime%", TimeFormat.getTime(top10[i].time)));
                 }
                 for (String footer : c.getStringList("messages.playtimetop.footer"))
                     Chat.message(sender, p, footer);
@@ -60,39 +60,37 @@ public class PlayTimeTop implements CommandExecutor {
         TopPlayers[] topTen = new TopPlayers[10];
         for (int i = 0; i < 10; i++)
             topTen[i] = new TopPlayers();
-
         try {
             JSONParser jsonParser = new JSONParser();
             FileReader reader = new FileReader(plugin.storagePath);
-            JSONArray players = (JSONArray) jsonParser.parse(reader);
-            if (players.size() > 0) {
-                for (int i = 0; (i < 10) && (i < players.size()); i++) {
-                    JSONObject player = (JSONObject) players.get(i);
-                    TopPlayers target = new TopPlayers(player.get("lastName").toString(), player.get("uuid").toString(),
-                            Integer.parseInt(player.get("time").toString()));
-                    topTen[i] = target;
+            JSONArray ps = (JSONArray) jsonParser.parse(reader);
+            if (ps.size() > 0) {
+                for (int i = 0; (i < 10) && (i < ps.size()); i++) {
+                    JSONObject p = (JSONObject) ps.get(i);
+                    TopPlayers t = new TopPlayers(p.get("lastName").toString(), p.get("uuid").toString(),
+                            Integer.parseInt(p.get("time").toString()));
+                    topTen[i] = t;
                 }
             }
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
-
         return topTen;
     }
 
     public static TopPlayers[] checkOnlinePlayers(TopPlayers[] top10) {
         for (Player p : plugin.getServer().getOnlinePlayers()) {
             if (Chat.TicksPlayed(p) > top10[9].time) {
-                TopPlayers newPlayer = new TopPlayers(p.getName(), p.getUniqueId().toString(), Chat.TicksPlayed(p));
+                TopPlayers np = new TopPlayers(p.getName(), p.getUniqueId().toString(), Chat.TicksPlayed(p));
                 for (int i = 0; i < 10; i++) {
-                    if (top10[i].time < newPlayer.time) {
-                        if (top10[i].uuid.equals(newPlayer.uuid)) {
-                            top10[i] = newPlayer;
+                    if (top10[i].time < np.time) {
+                        if (top10[i].uuid.equals(np.uuid)) {
+                            top10[i] = np;
                             break;
                         } else {
                             TopPlayers temp = top10[i];
-                            top10[i] = newPlayer;
-                            newPlayer = temp;
+                            top10[i] = np;
+                            np = temp;
                         }
                     }
                 }

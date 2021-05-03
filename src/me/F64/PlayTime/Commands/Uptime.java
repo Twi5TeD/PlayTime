@@ -16,18 +16,18 @@ public class Uptime implements CommandExecutor {
         plugin = instance;
     }
 
-    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        if (sender instanceof Player) {
-            Player p = (Player) sender;
+    public boolean onCommand(CommandSender s, Command cmd, String commandLabel, String[] args) {
+        if (s instanceof Player) {
+            Player p = (Player) s;
             FileConfiguration c = PlayTime.PlayTimeConfig.getConfig();
             if (cmd.getName().equalsIgnoreCase("serveruptime")) {
-                if (!(sender.hasPermission("playtime.uptime"))) {
+                if (!(s.hasPermission("playtime.uptime"))) {
                     for (String NoPermission : c.getStringList("messages.no_permission"))
-                        Chat.message(sender, p, NoPermission);
+                        Chat.message(s, p, NoPermission);
                     return true;
                 }
                 for (String ServerUptime : c.getStringList("messages.server_uptime"))
-                    Chat.message(sender, p, ServerUptime);
+                    Chat.message(s, p, ServerUptime);
             }
         }
         return true;

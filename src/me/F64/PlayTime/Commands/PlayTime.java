@@ -98,19 +98,19 @@ public class PlayTime implements CommandExecutor {
         return null;
     }
 
-    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        if (sender instanceof Player) {
-            Player p = (Player) sender;
+    public boolean onCommand(CommandSender s, Command cmd, String commandLabel, String[] args) {
+        if (s instanceof Player) {
+            Player p = (Player) s;
             FileConfiguration c = PlayTime.PlayTimeConfig.getConfig();
             if (cmd.getName().equalsIgnoreCase("playtime")) {
-                if (!(sender.hasPermission("playtime.check"))) {
+                if (!(s.hasPermission("playtime.check"))) {
                     for (String NoPermission : c.getStringList("messages.no_permission"))
-                        Chat.message(sender, p, NoPermission);
+                        Chat.message(s, p, NoPermission);
                     return true;
                 }
                 if (args.length == 0) {
                     for (String Player : c.getStringList("messages.player"))
-                        Chat.message(sender, p, Player);
+                        Chat.message(s, p, Player);
                 } else {
                     Player t = plugin.getServer().getPlayer(args[0]);
                     if (t == null) {
@@ -118,14 +118,14 @@ public class PlayTime implements CommandExecutor {
                         String storedJoins = getPlayerJoins(args[0]);
                         if (storedTime == null || storedJoins == null) {
                             for (String NotOnline : c.getStringList("messages.doesnt_exist"))
-                                Chat.message(sender, t, NotOnline.replace("%offlineplayer%", args[0]));
+                                Chat.message(s, t, NotOnline.replace("%offlineplayer%", args[0]));
                         } else {
                             for (String OfflinePlayers : c.getStringList("messages.offline_players"))
-                                Chat.message(sender, t,
+                                Chat.message(s, t,
                                         OfflinePlayers.replace("%offlineplayer%", args[0])
-                                                .replace("%offlinetime%",
-                                                        TimeFormat.getTime(Integer.valueOf(storedTime)))
-                                                .replace("%offlinetimesjoined%", String.valueOf(storedJoins)));
+                                        .replace("%offlinetime%",
+                                                TimeFormat.getTime(Integer.valueOf(storedTime)))
+                                        .replace("%offlinetimesjoined%", String.valueOf(storedJoins)));
                         }
                     } else {
                         for (String OtherPlayers : c.getStringList("messages.other_players"))

@@ -19,12 +19,12 @@ public class UpdateChecker {
         UpdateChecker.resourceId = resourceId;
     }
 
-    public void getVersion(final Consumer<String> consumer) {
+    public void getVersion(final Consumer<String> c) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + resourceId)
                     .openStream(); Scanner scanner = new Scanner(inputStream)) {
                 if (scanner.hasNext()) {
-                    consumer.accept(scanner.next());
+                    c.accept(scanner.next());
                 }
             } catch (IOException exception) {
                 plugin.getLogger().info("Cannot look for updates: " + exception.getMessage());

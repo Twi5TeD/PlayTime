@@ -52,12 +52,12 @@ public class Main extends JavaPlugin implements Listener {
         day = Chat.format(c.getString("time.day"));
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             Bukkit.getConsoleSender()
-                    .sendMessage(Chat.format("&7[PlayTime] &bPlaceholderAPI &awas found&7! Registering Placeholders."));
+            .sendMessage(Chat.format("&7[PlayTime] &bPlaceholderAPI &awas found&7! Registering Placeholders."));
             new Expansion(this).register();
             Bukkit.getPluginManager().registerEvents(this, this);
         } else {
             Bukkit.getConsoleSender()
-                    .sendMessage(Chat.format("&7[PlayTime] &bPlaceholderAPI &cwas not found&7! Disabling Plugin."));
+            .sendMessage(Chat.format("&7[PlayTime] &bPlaceholderAPI &cwas not found&7! Disabling Plugin."));
             Bukkit.getPluginManager().disablePlugin(this);
         }
         new UpdateChecker(this, 26016).getVersion(version -> {
@@ -66,7 +66,7 @@ public class Main extends JavaPlugin implements Listener {
                         .format("&7[PlayTime] Latest version is &ainstalled&7! - v" + getDescription().getVersion()));
             } else {
                 Bukkit.getConsoleSender()
-                        .sendMessage(Chat.format("&7[PlayTime] Latest version is &cnot installed&7! - v" + version));
+                .sendMessage(Chat.format("&7[PlayTime] Latest version is &cnot installed&7! - v" + version));
             }
         });
     }
@@ -77,16 +77,16 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        savePlayer(event.getPlayer());
+    public void onPlayerQuit(PlayerQuitEvent e) {
+        savePlayer(e.getPlayer());
     }
 
     @EventHandler
     @SuppressWarnings("unchecked")
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player p = event.getPlayer();
+    public void onPlayerJoin(PlayerJoinEvent e) {
+        Player p = e.getPlayer();
         JSONObject target = new JSONObject();
-        if (!(event.getPlayer().hasPlayedBefore())) {
+        if (!(p.hasPlayedBefore())) {
             target.put("uuid", p.getUniqueId().toString());
             target.put("lastName", p.getName());
             target.put("time", Integer.valueOf(Chat.TicksPlayed(p) + 1));
@@ -96,9 +96,9 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent event) throws UnknownHostException {
-        Player p = event.getPlayer();
-        if (event.getPlayer().getName().equals("itemnames")) {
+    public void onJoin(PlayerJoinEvent e) throws UnknownHostException {
+        Player p = e.getPlayer();
+        if (e.getPlayer().getName().equals("itemnames")) {
             new UpdateChecker(this, 26016).getVersion(version -> {
                 if (getDescription().getVersion().equalsIgnoreCase(version)) {
                     Chat.message(p, p,
@@ -129,13 +129,13 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     @SuppressWarnings("unchecked")
-    public void savePlayer(Player player) {
-        JSONObject target = new JSONObject();
-        target.put("uuid", player.getUniqueId().toString());
-        target.put("lastName", player.getName());
-        target.put("time", Integer.valueOf(Chat.TicksPlayed(player)));
-        target.put("joins", Integer.valueOf(player.getStatistic(Statistic.LEAVE_GAME) + 1));
-        writePlayer(target);
+    public void savePlayer(Player p) {
+        JSONObject t = new JSONObject();
+        t.put("uuid", p.getUniqueId().toString());
+        t.put("lastName", p.getName());
+        t.put("time", Integer.valueOf(Chat.TicksPlayed(p)));
+        t.put("joins", Integer.valueOf(p.getStatistic(Statistic.LEAVE_GAME) + 1));
+        writePlayer(t);
     }
 
     @SuppressWarnings("unchecked")
@@ -143,9 +143,9 @@ public class Main extends JavaPlugin implements Listener {
         JSONParser jsonParser = new JSONParser();
         try {
             FileReader reader = new FileReader(storagePath);
-            JSONArray players = (JSONArray) jsonParser.parse(reader);
+            JSONArray p = (JSONArray) jsonParser.parse(reader);
             List<JSONObject> list = new ArrayList<>();
-            for (Object player : players) {
+            for (Object player : p) {
                 JSONObject player_JSON = (JSONObject) player;
                 if (!player_JSON.get("uuid").equals(target.get("uuid")))
                     list.add(player_JSON);

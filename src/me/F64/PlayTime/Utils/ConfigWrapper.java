@@ -21,12 +21,12 @@ public class ConfigWrapper {
         this.fileName = fileName;
     }
 
-    public void createFile(String message, String header) {
+    public void createFile(String s, String h) {
         reloadConfig();
         saveConfig();
-        loadConfig(header);
-        if (message != null) {
-            this.plugin.getLogger().info(message);
+        loadConfig(h);
+        if (s != null) {
+            this.plugin.getLogger().info(s);
         }
     }
 
@@ -37,8 +37,8 @@ public class ConfigWrapper {
         return this.config;
     }
 
-    public void loadConfig(String header) {
-        this.config.options().header(header);
+    public void loadConfig(String h) {
+        this.config.options().header(h);
         this.config.options().copyDefaults(true);
         saveConfig();
     }
