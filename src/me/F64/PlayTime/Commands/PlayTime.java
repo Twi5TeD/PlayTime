@@ -123,9 +123,9 @@ public class PlayTime implements CommandExecutor {
                             for (String OfflinePlayers : c.getStringList("messages.offline_players"))
                                 Chat.message(s, t,
                                         OfflinePlayers.replace("%offlineplayer%", args[0])
-                                        .replace("%offlinetime%",
-                                                TimeFormat.getTime(Integer.valueOf(storedTime)))
-                                        .replace("%offlinetimesjoined%", String.valueOf(storedJoins)));
+                                                .replace("%offlinetime%",
+                                                        TimeFormat.getTime(Integer.valueOf(storedTime)))
+                                                .replace("%offlinetimesjoined%", String.valueOf(storedJoins)));
                         }
                     } else {
                         for (String OtherPlayers : c.getStringList("messages.other_players"))

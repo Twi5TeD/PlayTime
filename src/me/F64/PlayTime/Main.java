@@ -51,22 +51,18 @@ public class Main extends JavaPlugin implements Listener {
         hour = Chat.format(c.getString("time.hour"));
         day = Chat.format(c.getString("time.day"));
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            Bukkit.getConsoleSender()
-            .sendMessage(Chat.format("&7[PlayTime] &bPlaceholderAPI &awas found&7! Registering Placeholders."));
+            Chat.console("&7[PlayTime] &bPlaceholderAPI &awas found&7! Registering Placeholders.");
             new Expansion(this).register();
             Bukkit.getPluginManager().registerEvents(this, this);
         } else {
-            Bukkit.getConsoleSender()
-            .sendMessage(Chat.format("&7[PlayTime] &bPlaceholderAPI &cwas not found&7! Disabling Plugin."));
+            Chat.console("&7[PlayTime] &bPlaceholderAPI &cwas not found&7! Disabling Plugin.");
             Bukkit.getPluginManager().disablePlugin(this);
         }
         new UpdateChecker(this, 26016).getVersion(version -> {
             if (getDescription().getVersion().equalsIgnoreCase(version)) {
-                Bukkit.getConsoleSender().sendMessage(Chat
-                        .format("&7[PlayTime] Latest version is &ainstalled&7! - v" + getDescription().getVersion()));
+                Chat.console("&7[PlayTime] Latest version is &ainstalled&7! - v" + getDescription().getVersion());
             } else {
-                Bukkit.getConsoleSender()
-                .sendMessage(Chat.format("&7[PlayTime] Latest version is &cnot installed&7! - v" + version));
+                Chat.console("&7[PlayTime] Latest version is &cnot installed&7! - v" + version);
             }
         });
     }

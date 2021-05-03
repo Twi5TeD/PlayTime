@@ -25,32 +25,32 @@ public class PlayTimeTop implements CommandExecutor {
         plugin = instance;
     }
 
-    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        if (sender instanceof Player) {
-            Player p = (Player) sender;
+    public boolean onCommand(CommandSender s, Command cmd, String commandLabel, String[] args) {
+        if (s instanceof Player) {
+            Player p = (Player) s;
             FileConfiguration c = PlayTime.PlayTimeConfig.getConfig();
             if (cmd.getName().equalsIgnoreCase("playtimetop")) {
-                if (!(sender.hasPermission("playtime.check"))) {
+                if (!(s.hasPermission("playtime.check"))) {
                     for (String NoPermission : c.getStringList("messages.no_permission"))
-                        Chat.message(sender, p, NoPermission);
+                        Chat.message(s, p, NoPermission);
                     return true;
                 }
                 TopPlayers[] top10 = getTopTen();
                 top10 = checkOnlinePlayers(top10);
                 for (String header : c.getStringList("messages.playtimetop.header"))
-                    Chat.message(sender, p, header);
+                    Chat.message(s, p, header);
                 for (int i = 0; i < top10.length; i++) {
                     if (top10[i].time == 0) {
                         break;
                     }
                     for (String message : c.getStringList("messages.playtimetop.message"))
-                        Chat.message(sender, p,
+                        Chat.message(s, p,
                                 message.replace("%position%", Integer.toString(i + 1))
-                                .replace("%player%", top10[i].name)
-                                .replace("%playtime%", TimeFormat.getTime(top10[i].time)));
+                                        .replace("%player%", top10[i].name)
+                                        .replace("%playtime%", TimeFormat.getTime(top10[i].time)));
                 }
                 for (String footer : c.getStringList("messages.playtimetop.footer"))
-                    Chat.message(sender, p, footer);
+                    Chat.message(s, p, footer);
             }
         }
         return true;

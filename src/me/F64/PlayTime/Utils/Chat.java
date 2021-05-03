@@ -1,5 +1,6 @@
 package me.F64.PlayTime.Utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Statistic;
 import org.bukkit.command.CommandSender;
@@ -21,6 +22,11 @@ public class Chat {
 
     public static String message(CommandSender sender, Player p, String message) {
         sender.sendMessage(PlaceholderAPI.setPlaceholders(p, Chat.format(message)));
+        return message;
+    }
+
+    public static String console(String message) {
+        Bukkit.getConsoleSender().sendMessage(Chat.format(message));
         return message;
     }
 
