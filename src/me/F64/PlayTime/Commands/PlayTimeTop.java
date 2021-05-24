@@ -36,7 +36,7 @@ public class PlayTimeTop implements CommandExecutor {
                     return true;
                 }
                 TopPlayers[] top10;
-				top10 = getTopTen();
+                top10 = getTopTen();
                 top10 = checkOnlinePlayers(top10);
                 for (String header : c.getStringList("messages.playtimetop.header"))
                     Chat.message(s, p, header);
@@ -47,8 +47,8 @@ public class PlayTimeTop implements CommandExecutor {
                     for (String message : c.getStringList("messages.playtimetop.message"))
                         Chat.message(s, p,
                                 message.replace("%position%", Integer.toString(i + 1))
-                                        .replace("%player%", top10[i].name)
-                                        .replace("%playtime%", TimeFormat.getTime(top10[i].time)));
+                                .replace("%player%", top10[i].name)
+                                .replace("%playtime%", TimeFormat.getTime(top10[i].time)));
                 }
                 for (String footer : c.getStringList("messages.playtimetop.footer"))
                     Chat.message(s, p, footer);
@@ -80,7 +80,7 @@ public class PlayTimeTop implements CommandExecutor {
 
     public static TopPlayers[] checkOnlinePlayers(TopPlayers[] top10) {
         for (Player p : plugin.getServer().getOnlinePlayers()) {
-            if (Chat.TicksPlayed(p) > top10[top10.length-1].time) {
+            if (Chat.TicksPlayed(p) > top10[top10.length - 1].time) {
                 TopPlayers np = new TopPlayers(p.getName(), p.getUniqueId().toString(), Chat.TicksPlayed(p));
                 for (int i = 0; i < top10.length; i++) {
                     if (top10[i].time < np.time) {
