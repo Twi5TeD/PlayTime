@@ -19,3 +19,6 @@ aliases: [timeplayedtop, ptt]
 
   serveruptime:
 aliases: [uptime, sp]
+
+ 
+ If your a developer and want to add onto the plugin make sure to create a pull request and ill look into it :)
