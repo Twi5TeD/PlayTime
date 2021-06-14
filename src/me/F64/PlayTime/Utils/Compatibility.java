@@ -6,8 +6,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class Compatibility {
-
-    private static final int V1_8_9 = 188;
     private static final int V1_11 = 1110;
     private static final int V1_12 = 1120;
     private static final int V1_13 = 1130;
@@ -16,7 +14,7 @@ public final class Compatibility {
     private static final int CURRENT_VERSION = getCurrentVersion();
     private static final boolean IS_PAPER = checkPaper();
     public static final boolean IS_COMPONENT_LEGACY = !IS_PAPER || CURRENT_VERSION < V1_16_5;
-    public static final boolean IS_LEGACY = CURRENT_VERSION < V1_8_9;
+    public static final boolean IS_LEGACY = CURRENT_VERSION <= V1_13;
     public static final boolean IS_ITEM_LEGACY = CURRENT_VERSION < V1_13;
     public static final boolean IS_UNBREAKABLE_LEGACY = CURRENT_VERSION < V1_11;
     public static final boolean IS_PDC_VERSION = CURRENT_VERSION >= V1_14;

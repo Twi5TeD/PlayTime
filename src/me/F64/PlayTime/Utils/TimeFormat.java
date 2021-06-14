@@ -1,64 +1,57 @@
 package me.F64.PlayTime.Utils;
 
 import java.lang.management.ManagementFactory;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 
 import me.F64.PlayTime.Main;
 
 public class TimeFormat {
-    public static String getTime(int seconds) {
-        if (seconds < 60) {
-            return seconds + Main.second;
+    public static String getTime(final Duration duration) {
+        final StringBuilder builder = new StringBuilder();
+        long seconds = duration.getSeconds();
+        long minutes = seconds / 60;
+        long hours = minutes / 60;
+        long days = hours / 24;
+        long weeks = days / 7;
+        seconds %= 60;
+        minutes %= 60;
+        hours %= 24;
+        days %= 7;
+        if (seconds > 0) {
+            builder.insert(0, seconds + Main.second);
         }
-        int minutes = seconds / 60;
-        int s = 60 * minutes;
-        int secondsLeft = seconds - s;
-        if (minutes < 60) {
-            if (secondsLeft > 0) {
-                return String.valueOf(minutes + Main.minute + " " + secondsLeft + Main.second);
+        if (minutes > 0) {
+            if (builder.length() > 0) {
+                builder.insert(0, ' ');
             }
-            return String.valueOf(minutes + Main.minute);
+            builder.insert(0, minutes + Main.minute);
         }
-        if (minutes < 1440) {
-            String time = "";
-            int hours = minutes / 60;
-            time = hours + Main.hour;
-            int inMins = 60 * hours;
-            int leftOver = minutes - inMins;
-            if (leftOver >= 1) {
-                time = time + " " + leftOver + Main.minute;
+        if (hours > 0) {
+            if (builder.length() > 0) {
+                builder.insert(0, ' ');
             }
-            if (secondsLeft > 0) {
-                time = time + " " + secondsLeft + Main.second;
+            builder.insert(0, hours + Main.hour);
+        }
+        if (days > 0) {
+            if (builder.length() > 0) {
+                builder.insert(0, ' ');
             }
-            return time;
+            builder.insert(0, days + Main.day);
         }
-        String time = "";
-        int days = minutes / 1440;
-        time = days + Main.day;
-        int inMins = 1440 * days;
-        int leftOver = minutes - inMins;
-        if (leftOver >= 1) {
-            if (leftOver < 60) {
-                time = time + " " + leftOver + Main.minute;
-            } else {
-                int hours = leftOver / 60;
-                time = time + " " + hours + Main.hour;
-                int hoursInMins = 60 * hours;
-                int minsLeft = leftOver - hoursInMins;
-                if (leftOver >= 1) {
-                    time = time + " " + minsLeft + Main.minute;
-                }
+        if (weeks > 0) {
+            if (builder.length() > 0) {
+                builder.insert(0, ' ');
             }
+            builder.insert(0, weeks + Main.week);
         }
-        if (secondsLeft > 0) {
-            time = time + " " + secondsLeft + Main.second;
-        }
-        return time;
+        return builder.toString();
     }
 
     public static String Uptime() {
-        return TimeFormat
-                .getTime((int) TimeUnit.MILLISECONDS.toSeconds(ManagementFactory.getRuntimeMXBean().getUptime()));
+        return TimeFormat.getTime(
+                Duration.of(TimeUnit.MILLISECONDS.toSeconds(ManagementFactory.getRuntimeMXBean().getUptime()),
+                        ChronoUnit.SECONDS));
     }
 }

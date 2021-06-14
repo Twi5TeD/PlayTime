@@ -36,6 +36,7 @@ public class Main extends JavaPlugin implements Listener {
     public static String minute;
     public static String hour;
     public static String day;
+    public static String week;
     public String storagePath = getDataFolder() + "/userdata.json";
 
     @Override
@@ -50,6 +51,7 @@ public class Main extends JavaPlugin implements Listener {
         minute = Chat.format(c.getString("time.minute"));
         hour = Chat.format(c.getString("time.hour"));
         day = Chat.format(c.getString("time.day"));
+        week = Chat.format(c.getString("time.week"));
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             Chat.console("&7[PlayTime] &bPlaceholderAPI &awas found&7! Registering Placeholders.");
             new Expansion(this).register();

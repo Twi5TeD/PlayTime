@@ -1,5 +1,8 @@
 package me.F64.PlayTime.PlaceholderAPI;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 
@@ -49,7 +52,7 @@ public class Expansion extends PlaceholderExpansion {
         if (commandLabel.equals("player"))
             return String.valueOf(player.getName());
         if (commandLabel.equals("time"))
-            return String.valueOf(TimeFormat.getTime(Chat.ticksPlayed(player)));
+            return String.valueOf(TimeFormat.getTime(Duration.of(Chat.ticksPlayed(player), ChronoUnit.SECONDS)));
         if (commandLabel.equals("timesjoined"))
             return String.valueOf(player.getStatistic(Statistic.LEAVE_GAME) + 1);
         if (commandLabel.equals("serveruptime"))
@@ -65,7 +68,7 @@ public class Expansion extends PlaceholderExpansion {
             if (commandLabel.equals("top_" + (i + 1) + "_name"))
                 return top10[i].name;
             if (commandLabel.equals("top_" + (i + 1) + "_time"))
-                return TimeFormat.getTime(top10[i].time);
+                return TimeFormat.getTime(Duration.of(top10[i].time, ChronoUnit.SECONDS));
         }
         return null;
     }

@@ -2,6 +2,8 @@ package me.F64.PlayTime.Commands;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 
 import org.bukkit.command.Command;
@@ -45,6 +47,7 @@ public class Playtime implements CommandExecutor {
         c.addDefault("time.minute", "m");
         c.addDefault("time.hour", "h");
         c.addDefault("time.day", "d");
+        c.addDefault("time.week", "w");
         c.addDefault("messages.no_permission", Arrays.asList("&8[&bPlayTime&8] &cYou don't have permission."));
         c.addDefault("messages.doesnt_exist",
                 Arrays.asList("&8[&bPlayTime&8] &cPlayer %offlineplayer% has not joined before!"));
@@ -122,9 +125,9 @@ public class Playtime implements CommandExecutor {
                         } else {
                             for (String offlinePlayers : c.getStringList("messages.offline_players"))
                                 Chat.message(sender, target,
-                                        offlinePlayers.replace("%offlineplayer%", args[0])
-                                        .replace("%offlinetime%",
-                                                TimeFormat.getTime(Integer.valueOf(storedTime)))
+                                        offlinePlayers.replace("%offlineplayer%", args[0]).replace("%offlinetime%",
+                                                TimeFormat.getTime(
+                                                        Duration.of(Integer.valueOf(storedTime), ChronoUnit.SECONDS)))
                                         .replace("%offlinetimesjoined%", String.valueOf(storedJoins)));
                         }
                     } else {

@@ -2,6 +2,8 @@ package me.F64.PlayTime.Commands;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -47,8 +49,8 @@ public class PlaytimeTop implements CommandExecutor {
                     for (String message : c.getStringList("messages.playtimetop.message"))
                         Chat.message(sender, player,
                                 message.replace("%position%", Integer.toString(i + 1))
-                                .replace("%player%", top10[i].name)
-                                .replace("%playtime%", TimeFormat.getTime(top10[i].time)));
+                                .replace("%player%", top10[i].name).replace("%playtime%",
+                                        TimeFormat.getTime(Duration.of(top10[i].time, ChronoUnit.SECONDS))));
                 }
                 for (String footer : c.getStringList("messages.playtimetop.footer"))
                     Chat.message(sender, player, footer);
