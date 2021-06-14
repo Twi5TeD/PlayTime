@@ -16,24 +16,24 @@ public class Chat {
         plugin = instance;
     }
 
-    public static String format(String s) {
-        return ChatColor.translateAlternateColorCodes('&', s);
+    public static String format(String commandLabel) {
+        return ChatColor.translateAlternateColorCodes('&', commandLabel);
     }
 
-    public static String message(CommandSender sender, Player p, String message) {
-        sender.sendMessage(PlaceholderAPI.setPlaceholders(p, Chat.format(message)));
-        return message;
+    public static String message(CommandSender sender, Player player, String commandLabel) {
+        sender.sendMessage(PlaceholderAPI.setPlaceholders(player, format(commandLabel)));
+        return commandLabel;
     }
 
-    public static String console(String message) {
-        Bukkit.getConsoleSender().sendMessage(Chat.format(message));
-        return message;
+    public static String console(String commandLabel) {
+        Bukkit.getConsoleSender().sendMessage(format(commandLabel));
+        return commandLabel;
     }
 
-    public static int TicksPlayed(Player p) {
-        if (!Compatibility.isLegacy()) {
-            return p.getStatistic(Statistic.valueOf("PLAY_ONE_MINUTE")) / 20;
+    public static int ticksPlayed(Player player) {
+        if (!Compatibility.IS_LEGACY) {
+            return player.getStatistic(Statistic.valueOf("PLAY_ONE_MINUTE")) / 20;
         }
-        return p.getStatistic(Statistic.valueOf("PLAY_ONE_TICK")) / 20;
+        return player.getStatistic(Statistic.valueOf("PLAY_ONE_TICK")) / 20;
     }
 }

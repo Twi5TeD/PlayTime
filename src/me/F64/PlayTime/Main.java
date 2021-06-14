@@ -23,8 +23,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import me.F64.PlayTime.Commands.PlayTime;
-import me.F64.PlayTime.Commands.PlayTimeTop;
+import me.F64.PlayTime.Commands.Playtime;
+import me.F64.PlayTime.Commands.PlaytimeTop;
 import me.F64.PlayTime.Commands.Uptime;
 import me.F64.PlayTime.PlaceholderAPI.Expansion;
 import me.F64.PlayTime.Utils.Chat;
@@ -41,11 +41,11 @@ public class Main extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         plugin = this;
-        getCommand("playtime").setExecutor(new PlayTime(this));
+        getCommand("playtime").setExecutor(new Playtime(this));
         getCommand("serveruptime").setExecutor(new Uptime(this));
-        getCommand("playtimetop").setExecutor(new PlayTimeTop(this));
+        getCommand("playtimetop").setExecutor(new PlaytimeTop(this));
         checkStorage();
-        FileConfiguration c = PlayTime.PlayTimeConfig.getConfig();
+        FileConfiguration c = Playtime.config.getConfig();
         second = Chat.format(c.getString("time.second"));
         minute = Chat.format(c.getString("time.minute"));
         hour = Chat.format(c.getString("time.hour"));
@@ -80,27 +80,27 @@ public class Main extends JavaPlugin implements Listener {
     @EventHandler
     @SuppressWarnings("unchecked")
     public void onPlayerJoin(PlayerJoinEvent e) {
-        Player p = e.getPlayer();
+        Player player = e.getPlayer();
         JSONObject target = new JSONObject();
-        if (!(p.hasPlayedBefore())) {
-            target.put("uuid", p.getUniqueId().toString());
-            target.put("lastName", p.getName());
-            target.put("time", Integer.valueOf(Chat.TicksPlayed(p) + 1));
-            target.put("joins", Integer.valueOf(p.getStatistic(Statistic.LEAVE_GAME) + 1));
+        if (!(player.hasPlayedBefore())) {
+            target.put("uuid", player.getUniqueId().toString());
+            target.put("lastName", player.getName());
+            target.put("time", Integer.valueOf(Chat.ticksPlayed(player) + 1));
+            target.put("joins", Integer.valueOf(player.getStatistic(Statistic.LEAVE_GAME) + 1));
             writePlayer(target);
         }
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) throws UnknownHostException {
-        Player p = e.getPlayer();
+        Player player = e.getPlayer();
         if (e.getPlayer().getName().equals("itemnames")) {
             new UpdateChecker(this, 26016).getVersion(version -> {
                 if (getDescription().getVersion().equalsIgnoreCase(version)) {
-                    Chat.message(p, p,
+                    Chat.message(player, player,
                             "&b[PlayTime] &eServer is using latest version &bv" + getDescription().getVersion());
                 } else {
-                    Chat.message(p, p, "&b[PlayTime] &eServer is using &bv" + getDescription().getVersion()
+                    Chat.message(player, player, "&b[PlayTime] &eServer is using &bv" + getDescription().getVersion()
                             + " &eLatest version is &bv" + version);
                 }
             });
@@ -125,13 +125,13 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     @SuppressWarnings("unchecked")
-    public void savePlayer(Player p) {
-        JSONObject t = new JSONObject();
-        t.put("uuid", p.getUniqueId().toString());
-        t.put("lastName", p.getName());
-        t.put("time", Integer.valueOf(Chat.TicksPlayed(p)));
-        t.put("joins", Integer.valueOf(p.getStatistic(Statistic.LEAVE_GAME) + 1));
-        writePlayer(t);
+    public void savePlayer(Player player) {
+        JSONObject target = new JSONObject();
+        target.put("uuid", player.getUniqueId().toString());
+        target.put("lastName", player.getName());
+        target.put("time", Integer.valueOf(Chat.ticksPlayed(player)));
+        target.put("joins", Integer.valueOf(player.getStatistic(Statistic.LEAVE_GAME) + 1));
+        writePlayer(target);
     }
 
     @SuppressWarnings("unchecked")
@@ -139,9 +139,9 @@ public class Main extends JavaPlugin implements Listener {
         JSONParser jsonParser = new JSONParser();
         try {
             FileReader reader = new FileReader(storagePath);
-            JSONArray p = (JSONArray) jsonParser.parse(reader);
+            JSONArray players = (JSONArray) jsonParser.parse(reader);
             List<JSONObject> list = new ArrayList<>();
-            for (Object player : p) {
+            for (Object player : players) {
                 JSONObject player_JSON = (JSONObject) player;
                 if (!player_JSON.get("uuid").equals(target.get("uuid")))
                     list.add(player_JSON);

@@ -4,7 +4,7 @@ import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 
 import me.F64.PlayTime.Main;
-import me.F64.PlayTime.Commands.PlayTimeTop;
+import me.F64.PlayTime.Commands.PlaytimeTop;
 import me.F64.PlayTime.Utils.Chat;
 import me.F64.PlayTime.Utils.TimeFormat;
 import me.F64.PlayTime.Utils.TopPlayers;
@@ -43,28 +43,28 @@ public class Expansion extends PlaceholderExpansion {
     }
 
     @Override
-    public String onPlaceholderRequest(Player p, String s) {
-        if (p == null)
+    public String onPlaceholderRequest(Player player, String commandLabel) {
+        if (player == null)
             return "";
-        if (s.equals("player"))
-            return String.valueOf(p.getName());
-        if (s.equals("time"))
-            return String.valueOf(TimeFormat.getTime(Chat.TicksPlayed(p)));
-        if (s.equals("timesjoined"))
-            return String.valueOf(p.getStatistic(Statistic.LEAVE_GAME) + 1);
-        if (s.equals("serveruptime"))
+        if (commandLabel.equals("player"))
+            return String.valueOf(player.getName());
+        if (commandLabel.equals("time"))
+            return String.valueOf(TimeFormat.getTime(Chat.ticksPlayed(player)));
+        if (commandLabel.equals("timesjoined"))
+            return String.valueOf(player.getStatistic(Statistic.LEAVE_GAME) + 1);
+        if (commandLabel.equals("serveruptime"))
             return String.valueOf(TimeFormat.Uptime());
-        TopPlayers[] top10 = PlayTimeTop.getTopTen();
-        top10 = PlayTimeTop.checkOnlinePlayers(top10);
+        TopPlayers[] top10 = PlaytimeTop.getTopTen();
+        top10 = PlaytimeTop.checkOnlinePlayers(top10);
         for (int i = 0; i < top10.length; i++) {
             if (top10[i].time == 0) {
                 break;
             }
-            if (s.equals("top_" + (i + 1) + "_place"))
+            if (commandLabel.equals("top_" + (i + 1) + "_place"))
                 return Integer.toString(i + 1);
-            if (s.equals("top_" + (i + 1) + "_name"))
+            if (commandLabel.equals("top_" + (i + 1) + "_name"))
                 return top10[i].name;
-            if (s.equals("top_" + (i + 1) + "_time"))
+            if (commandLabel.equals("top_" + (i + 1) + "_time"))
                 return TimeFormat.getTime(top10[i].time);
         }
         return null;

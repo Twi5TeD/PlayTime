@@ -19,14 +19,14 @@ import me.F64.PlayTime.Utils.Chat;
 import me.F64.PlayTime.Utils.ConfigWrapper;
 import me.F64.PlayTime.Utils.TimeFormat;
 
-public class PlayTime implements CommandExecutor {
+public class Playtime implements CommandExecutor {
     Main plugin;
-    public static ConfigWrapper PlayTimeConfig;
+    public static ConfigWrapper config;
 
-    public PlayTime(Main instance) {
+    public Playtime(Main instance) {
         plugin = instance;
-        PlayTime.PlayTimeConfig = new ConfigWrapper(instance, null, "config.yml");
-        PlayTime.PlayTimeConfig.createFile(null,
+        Playtime.config = new ConfigWrapper(instance, null, "config.yml");
+        Playtime.config.createFile(null,
                 "# Playtime By F64_Rx - Need Help? PM me on Spigot or post in the discussion.\r\n"
                         + "# =================\r\n" + "# | CONFIGURATION |\r\n" + "# =================\r\n" + "\r\n"
                         + "# available placeholders\r\n" + "# %playtime_player% - returns the player name\r\n"
@@ -40,7 +40,7 @@ public class PlayTime implements CommandExecutor {
                         + "# %playtime_top_#_name% - shows the name of the top 10\r\n"
                         + "# %playtime_top_#_time% - shows the time of the top 10\r\n"
                         + "# You can also use any other placeholder that PlaceholderAPI supports :) \r\n" + "");
-        FileConfiguration c = PlayTime.PlayTimeConfig.getConfig();
+        FileConfiguration c = Playtime.config.getConfig();
         c.addDefault("time.second", "s");
         c.addDefault("time.minute", "m");
         c.addDefault("time.hour", "h");
@@ -60,8 +60,8 @@ public class PlayTime implements CommandExecutor {
         c.addDefault("messages.server_uptime",
                 Arrays.asList("&8[&bPlayTime&8] &bServer's total uptime is %playtime_serveruptime%"));
         c.options().copyDefaults(true);
-        PlayTime.PlayTimeConfig.saveConfig();
-        PlayTime.PlayTimeConfig.reloadConfig();
+        Playtime.config.saveConfig();
+        Playtime.config.reloadConfig();
     }
 
     public String getPlayerTime(String name) {
@@ -98,38 +98,38 @@ public class PlayTime implements CommandExecutor {
         return null;
     }
 
-    public boolean onCommand(CommandSender s, Command cmd, String commandLabel, String[] args) {
-        if (s instanceof Player) {
-            Player p = (Player) s;
-            FileConfiguration c = PlayTime.PlayTimeConfig.getConfig();
+    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            FileConfiguration c = Playtime.config.getConfig();
             if (cmd.getName().equalsIgnoreCase("playtime")) {
-                if (!(s.hasPermission("playtime.check"))) {
-                    for (String NoPermission : c.getStringList("messages.no_permission"))
-                        Chat.message(s, p, NoPermission);
+                if (!(sender.hasPermission("playtime.check"))) {
+                    for (String noPermission : c.getStringList("messages.no_permission"))
+                        Chat.message(sender, player, noPermission);
                     return true;
                 }
                 if (args.length == 0) {
-                    for (String Player : c.getStringList("messages.player"))
-                        Chat.message(s, p, Player);
+                    for (String thisPlayer : c.getStringList("messages.player"))
+                        Chat.message(sender, player, thisPlayer);
                 } else {
-                    Player t = plugin.getServer().getPlayer(args[0]);
-                    if (t == null) {
+                    Player target = plugin.getServer().getPlayer(args[0]);
+                    if (target == null) {
                         String storedTime = getPlayerTime(args[0]);
                         String storedJoins = getPlayerJoins(args[0]);
                         if (storedTime == null || storedJoins == null) {
-                            for (String NotOnline : c.getStringList("messages.doesnt_exist"))
-                                Chat.message(s, t, NotOnline.replace("%offlineplayer%", args[0]));
+                            for (String notOnline : c.getStringList("messages.doesnt_exist"))
+                                Chat.message(sender, target, notOnline.replace("%offlineplayer%", args[0]));
                         } else {
-                            for (String OfflinePlayers : c.getStringList("messages.offline_players"))
-                                Chat.message(s, t,
-                                        OfflinePlayers.replace("%offlineplayer%", args[0])
+                            for (String offlinePlayers : c.getStringList("messages.offline_players"))
+                                Chat.message(sender, target,
+                                        offlinePlayers.replace("%offlineplayer%", args[0])
                                         .replace("%offlinetime%",
                                                 TimeFormat.getTime(Integer.valueOf(storedTime)))
                                         .replace("%offlinetimesjoined%", String.valueOf(storedJoins)));
                         }
                     } else {
-                        for (String OtherPlayers : c.getStringList("messages.other_players"))
-                            Chat.message(p, t, OtherPlayers);
+                        for (String otherPlayer : c.getStringList("messages.other_players"))
+                            Chat.message(player, target, otherPlayer);
                     }
                 }
             }

@@ -9,9 +9,9 @@ public class TopPlayers {
         time = 0;
     }
 
-    public TopPlayers(String n, String u, int t) {
-        name = n;
-        uuid = u;
-        time = t;
+    public TopPlayers(String name, String uuid, int time) {
+        this.name = name;
+        this.uuid = uuid;
+        this.time = time;
     }
 }
