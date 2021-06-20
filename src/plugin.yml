@@ -1,6 +1,6 @@
 name: PlayTime
 author: F64_Rx
-version: 2.9.8
+version: 2.9.9
 description: allows player to see how much they have played for.
 main: me.F64.PlayTime.Main
 depend: [PlaceholderAPI]
@@ -18,3 +18,7 @@ commands:
     usage: /<command>
     aliases: [uptime, sp]
     description: Shows how long the server has been up for!
+  playtimereload:
+    usage: /<command>
+    aliases: [ptreload, ptr]
+    description: reloads config messages!

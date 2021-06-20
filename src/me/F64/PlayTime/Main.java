@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,6 +23,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import me.F64.PlayTime.Commands.Playtime;
+import me.F64.PlayTime.Commands.PlaytimeReload;
 import me.F64.PlayTime.Commands.PlaytimeTop;
 import me.F64.PlayTime.Commands.Uptime;
 import me.F64.PlayTime.PlaceholderAPI.Expansion;
@@ -32,11 +32,6 @@ import me.F64.PlayTime.Utils.UpdateChecker;
 
 public class Main extends JavaPlugin implements Listener {
     public static Plugin plugin;
-    public static String second;
-    public static String minute;
-    public static String hour;
-    public static String day;
-    public static String week;
     public String storagePath = getDataFolder() + "/userdata.json";
 
     @Override
@@ -45,21 +40,13 @@ public class Main extends JavaPlugin implements Listener {
         getCommand("playtime").setExecutor(new Playtime(this));
         getCommand("serveruptime").setExecutor(new Uptime(this));
         getCommand("playtimetop").setExecutor(new PlaytimeTop(this));
+        getCommand("playtimereload").setExecutor(new PlaytimeReload(this));
         checkStorage();
-        FileConfiguration c = Playtime.config.getConfig();
-        second = Chat.format(c.getString("time.second"));
-        minute = Chat.format(c.getString("time.minute"));
-        hour = Chat.format(c.getString("time.hour"));
-        day = Chat.format(c.getString("time.day"));
-        week = Chat.format(c.getString("time.week"));
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            Chat.console("&7[PlayTime] &bPlaceholderAPI &awas found&7! Registering Placeholders.");
-            new Expansion(this).register();
-            Bukkit.getPluginManager().registerEvents(this, this);
-        } else {
-            Chat.console("&7[PlayTime] &bPlaceholderAPI &cwas not found&7! Disabling Plugin.");
-            Bukkit.getPluginManager().disablePlugin(this);
-        }
+        placeholderAPI();
+        updateChecker();
+    }
+
+    private void updateChecker() {
         new UpdateChecker(this, 26016).getVersion(version -> {
             if (getDescription().getVersion().equalsIgnoreCase(version)) {
                 Chat.console("&7[PlayTime] Latest version is &ainstalled&7! - v" + getDescription().getVersion());
@@ -69,11 +56,22 @@ public class Main extends JavaPlugin implements Listener {
         });
     }
 
+    private void placeholderAPI() {
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            Chat.console("&7[PlayTime] &bPlaceholderAPI &awas found&7! Registering Placeholders.");
+            new Expansion(this).register();
+            Bukkit.getPluginManager().registerEvents(this, this);
+        } else {
+            Chat.console("&7[PlayTime] &bPlaceholderAPI &cwas not found&7! Disabling Plugin.");
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
+    }
+
     @Override
     public void onDisable() {
         getServer().getOnlinePlayers().forEach(this::savePlayer);
     }
-
+    
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         savePlayer(e.getPlayer());

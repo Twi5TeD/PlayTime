@@ -62,6 +62,8 @@ public class Playtime implements CommandExecutor {
         c.addDefault("messages.playtimetop.footer", Arrays.asList(""));
         c.addDefault("messages.server_uptime",
                 Arrays.asList("&8[&bPlayTime&8] &bServer's total uptime is %playtime_serveruptime%"));
+        c.addDefault("messages.reload_config",
+                Arrays.asList("&8[&bPlayTime&8] &bYou have successfully reloaded the config."));
         c.options().copyDefaults(true);
         Playtime.config.saveConfig();
         Playtime.config.reloadConfig();
