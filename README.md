@@ -10,6 +10,7 @@ Commands/Permissions:
 - /playtimetop - shows the top 10 playtimes on the server - Permission: playtime.check
 - /playtime <player> - shows another player's time played on the server - Permission: playtime.check
 - /serveruptime - shows the server online time - Permission: playtime.uptime
+- /playtimereload - reloads config messages - Permission: playtime.reload
  
   playtime:
 aliases: [timeplayed, pt]
@@ -20,5 +21,7 @@ aliases: [timeplayedtop, ptt]
   serveruptime:
 aliases: [uptime, sp]
 
+  playtimereload:
+aliases: [ptreload, ptr]
  
  If your a developer and want to add onto the plugin make sure to create a pull request and ill look into it :)
