@@ -43,11 +43,16 @@ public class Playtime implements CommandExecutor {
                         + "# %playtime_top_#_time% - shows the time of the top 10\r\n"
                         + "# You can also use any other placeholder that PlaceholderAPI supports :) \r\n" + "");
         FileConfiguration c = Playtime.config.getConfig();
-        c.addDefault("time.second", "s");
-        c.addDefault("time.minute", "m");
-        c.addDefault("time.hour", "h");
-        c.addDefault("time.day", "d");
-        c.addDefault("time.week", "w");
+        c.addDefault("time.second.enabled", true);
+        c.addDefault("time.second.prefix", "s");
+        c.addDefault("time.minute.enabled", true);
+        c.addDefault("time.minute.prefix", "m");
+        c.addDefault("time.hour.enabled", true);
+        c.addDefault("time.hour.prefix", "h");
+        c.addDefault("time.day.enabled", true);
+        c.addDefault("time.day.prefix", "d");
+        c.addDefault("time.week.enabled", true);
+        c.addDefault("time.week.prefix", "w");
         c.addDefault("messages.no_permission", Arrays.asList("&8[&bPlayTime&8] &cYou don't have permission."));
         c.addDefault("messages.doesnt_exist",
                 Arrays.asList("&8[&bPlayTime&8] &cPlayer %offlineplayer% has not joined before!"));
