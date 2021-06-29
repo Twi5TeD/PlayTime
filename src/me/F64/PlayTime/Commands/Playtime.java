@@ -1,7 +1,6 @@
 package me.F64.PlayTime.Commands;
 
 import java.io.FileReader;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
@@ -14,8 +13,6 @@ import org.bukkit.entity.Player;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import me.F64.PlayTime.Main;
 import me.F64.PlayTime.Utils.Chat;
 import me.F64.PlayTime.Utils.ConfigWrapper;
@@ -71,7 +68,6 @@ public class Playtime implements CommandExecutor {
                 Arrays.asList("&8[&bPlayTime&8] &bYou have successfully reloaded the config."));
         c.options().copyDefaults(true);
         Playtime.config.saveConfig();
-        Playtime.config.reloadConfig();
     }
 
     public String getPlayerTime(String name) {
@@ -85,7 +81,7 @@ public class Playtime implements CommandExecutor {
                     return player.get("time").toString();
                 }
             }
-        } catch (IOException | ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -102,7 +98,7 @@ public class Playtime implements CommandExecutor {
                     return player.get("joins").toString();
                 }
             }
-        } catch (IOException | ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -135,7 +131,7 @@ public class Playtime implements CommandExecutor {
                                         offlinePlayers.replace("%offlineplayer%", args[0]).replace("%offlinetime%",
                                                 TimeFormat.getTime(
                                                         Duration.of(Integer.valueOf(storedTime), ChronoUnit.SECONDS)))
-                                        .replace("%offlinetimesjoined%", String.valueOf(storedJoins)));
+                                                .replace("%offlinetimesjoined%", String.valueOf(storedJoins)));
                         }
                     } else {
                         for (String otherPlayer : c.getStringList("messages.other_players"))

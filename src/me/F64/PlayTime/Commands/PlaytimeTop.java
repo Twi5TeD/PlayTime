@@ -1,7 +1,6 @@
 package me.F64.PlayTime.Commands;
 
 import java.io.FileReader;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
@@ -13,8 +12,6 @@ import org.bukkit.entity.Player;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import me.F64.PlayTime.Main;
 import me.F64.PlayTime.Utils.Chat;
 import me.F64.PlayTime.Utils.TimeFormat;
@@ -67,38 +64,34 @@ public class PlaytimeTop implements CommandExecutor {
             JSONArray players = (JSONArray) jsonParser.parse(reader);
             int len = Math.min(players.size(), 10);
             topTen = new TopPlayers[len];
-            for (int i = 0; (i < len); i++) {
+            for (int i = 0; i < len; ++i) {
                 JSONObject player = (JSONObject) players.get(i);
                 TopPlayers top = new TopPlayers(player.get("lastName").toString(), player.get("uuid").toString(),
                         Integer.parseInt(player.get("time").toString()));
                 topTen[i] = top;
             }
             return topTen;
-        } catch (IOException | ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return topTen;
     }
 
     public static TopPlayers[] checkOnlinePlayers(TopPlayers[] top10) {
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
-            if (Chat.ticksPlayed(player) > top10[top10.length - 1].time) {
+        for (Player player : plugin.getServer().getOnlinePlayers())
+            if (Chat.ticksPlayed(player) > (top10.length == 0 ? 0 : top10[top10.length - 1].time)) {
                 TopPlayers top = new TopPlayers(player.getName(), player.getUniqueId().toString(),
                         Chat.ticksPlayed(player));
-                for (int i = 0; i < top10.length; i++) {
-                    if (top10[i].time < top.time) {
+                for (int i = 0; i < top10.length; ++i)
+                    if (top10[i].time <= top.time)
                         if (top10[i].uuid.equals(top.uuid)) {
                             top10[i] = top;
                             break;
                         } else {
                             TopPlayers temp = top10[i];
-                            top10[i] = top;
-                            top = temp;
+                            top10[i] = (top = temp);
                         }
-                    }
-                }
             }
-        }
         return top10;
     }
 }

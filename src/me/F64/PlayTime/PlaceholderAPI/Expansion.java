@@ -47,29 +47,31 @@ public class Expansion extends PlaceholderExpansion {
 
     @Override
     public String onPlaceholderRequest(Player player, String commandLabel) {
+        if (commandLabel.equals("serveruptime"))
+            return String.valueOf(TimeFormat.Uptime());
+        if (commandLabel.startsWith("top_")) {
+            TopPlayers[] top10 = PlaytimeTop.getTopTen();
+            top10 = PlaytimeTop.checkOnlinePlayers(top10);
+            for (int i = 0; i < top10.length; i++) {
+                if (top10[i].time == 0) {
+                    break;
+                }
+                if (commandLabel.equals("top_" + (i + 1) + "_place"))
+                    return Integer.toString(i + 1);
+                if (commandLabel.equals("top_" + (i + 1) + "_name"))
+                    return top10[i].name;
+                if (commandLabel.equals("top_" + (i + 1) + "_time"))
+                    return TimeFormat.getTime(Duration.of(top10[i].time, ChronoUnit.SECONDS));
+            }
+        }
         if (player == null)
-            return "";
+            return null;
         if (commandLabel.equals("player"))
             return String.valueOf(player.getName());
         if (commandLabel.equals("time"))
             return String.valueOf(TimeFormat.getTime(Duration.of(Chat.ticksPlayed(player), ChronoUnit.SECONDS)));
         if (commandLabel.equals("timesjoined"))
             return String.valueOf(player.getStatistic(Statistic.LEAVE_GAME) + 1);
-        if (commandLabel.equals("serveruptime"))
-            return String.valueOf(TimeFormat.Uptime());
-        TopPlayers[] top10 = PlaytimeTop.getTopTen();
-        top10 = PlaytimeTop.checkOnlinePlayers(top10);
-        for (int i = 0; i < top10.length; i++) {
-            if (top10[i].time == 0) {
-                break;
-            }
-            if (commandLabel.equals("top_" + (i + 1) + "_place"))
-                return Integer.toString(i + 1);
-            if (commandLabel.equals("top_" + (i + 1) + "_name"))
-                return top10[i].name;
-            if (commandLabel.equals("top_" + (i + 1) + "_time"))
-                return TimeFormat.getTime(Duration.of(top10[i].time, ChronoUnit.SECONDS));
-        }
         return null;
     }
 }

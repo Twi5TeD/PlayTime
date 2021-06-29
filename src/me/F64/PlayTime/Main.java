@@ -20,8 +20,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import me.F64.PlayTime.Commands.Playtime;
 import me.F64.PlayTime.Commands.PlaytimeReload;
 import me.F64.PlayTime.Commands.PlaytimeTop;
@@ -71,7 +69,7 @@ public class Main extends JavaPlugin implements Listener {
     public void onDisable() {
         getServer().getOnlinePlayers().forEach(this::savePlayer);
     }
-    
+
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         savePlayer(e.getPlayer());
@@ -116,7 +114,7 @@ public class Main extends JavaPlugin implements Listener {
         if (!userdataFile.exists()) {
             try {
                 FileWriter writer = new FileWriter(userdataFile.getAbsoluteFile());
-                writer.write((new JSONArray()).toJSONString());
+                writer.write("[]");
                 writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -161,7 +159,7 @@ public class Main extends JavaPlugin implements Listener {
             writer.write(sortedPlayers.toJSONString());
             writer.flush();
             writer.close();
-        } catch (IOException | ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
