@@ -30,7 +30,7 @@ public class Chat {
         return commandLabel;
     }
 
-    public static int ticksPlayed(Player player) {
+    public static int ticksPlayed(OfflinePlayer player) {
         if (!Compatibility.IS_LEGACY) {
             return player.getStatistic(Statistic.valueOf("PLAY_ONE_MINUTE")) / 20;
         }

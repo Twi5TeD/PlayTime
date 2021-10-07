@@ -46,7 +46,7 @@ public class Expansion extends PlaceholderExpansion {
     }
 
     @Override
-    public String onPlaceholderRequest(Player player, String commandLabel) {
+    public String onRequest(OfflinePlayer player, String commandLabel) {
         if (commandLabel.equals("serveruptime"))
             return String.valueOf(TimeFormat.Uptime());
         if (commandLabel.startsWith("top_")) {
