@@ -1,12 +1,20 @@
 package me.F64.PlayTime.PlaceholderAPI;
 
+import java.io.FileReader;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.Statistic;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import me.F64.PlayTime.Main;
+import me.F64.PlayTime.Commands.Playtime;
 import me.F64.PlayTime.Commands.PlaytimeTop;
 import me.F64.PlayTime.Utils.Chat;
 import me.F64.PlayTime.Utils.TimeFormat;
@@ -14,10 +22,12 @@ import me.F64.PlayTime.Utils.TopPlayers;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 public class Expansion extends PlaceholderExpansion {
-    private Main plugin;
+    static Main plugin;
+    static Pattern topPlaceholder = Pattern.compile("top_([0-9]+)_(name|time)");
+    Pattern positionPlaceholder = Pattern.compile("position_([_A-Za-z0-9]+)");
 
-    public Expansion(Main plugin) {
-        this.plugin = plugin;
+    public Expansion(Main instance) {
+        plugin = instance;
     }
 
     @Override
@@ -45,23 +55,45 @@ public class Expansion extends PlaceholderExpansion {
         return plugin.getDescription().getVersion();
     }
 
+    public String get(int pos, String type) {
+        FileConfiguration c = Playtime.config.getConfig();
+        TopPlayers[] top10 = PlaytimeTop.getTopTen();
+        top10 = PlaytimeTop.checkOnlinePlayers(top10);
+        if (top10.length <= pos - 1)
+            return type.equals("name") ? Chat.format(c.getString("placeholder.top.name"))
+                    : Chat.format(c.getString("placeholder.top.time"));
+        TopPlayers top = top10[pos - 1];
+        return type.equals("name") ? top.name : TimeFormat.getTime(Duration.of(top.time, ChronoUnit.SECONDS));
+    }
+
     @Override
     public String onPlaceholderRequest(Player player, String commandLabel) {
         if (commandLabel.equals("serveruptime"))
             return String.valueOf(TimeFormat.Uptime());
-        if (commandLabel.startsWith("top_")) {
-            TopPlayers[] top10 = PlaytimeTop.getTopTen();
-            top10 = PlaytimeTop.checkOnlinePlayers(top10);
-            for (int i = 0; i < top10.length; i++) {
-                if (top10[i].time == 0) {
-                    break;
+        if (commandLabel.equals("position")) {
+            int i = 0;
+            try {
+                JSONParser jsonParser = new JSONParser();
+                FileReader reader = new FileReader(plugin.storagePath);
+                JSONArray players = (JSONArray) jsonParser.parse(reader);
+                while (true) {
+                    if (players.size() == i)
+                        break;
+                    JSONObject p = (JSONObject) players.get(i++);
+                    if (p.get("lastName").toString().equals(player.getName()))
+                        break;
                 }
-                if (commandLabel.equals("top_" + (i + 1) + "_place"))
-                    return Integer.toString(i + 1);
-                if (commandLabel.equals("top_" + (i + 1) + "_name"))
-                    return top10[i].name;
-                if (commandLabel.equals("top_" + (i + 1) + "_time"))
-                    return TimeFormat.getTime(Duration.of(top10[i].time, ChronoUnit.SECONDS));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return i + "";
+        }
+        if (commandLabel.startsWith("top_")) {
+            Matcher m = topPlaceholder.matcher(commandLabel);
+            if (m.find()) {
+                int pos = Integer.parseInt(m.group(1));
+                String type = m.group(2);
+                return get(pos, type);
             }
         }
         if (player == null)

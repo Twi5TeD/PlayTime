@@ -26,19 +26,25 @@ public class Playtime implements CommandExecutor {
         plugin = instance;
         Playtime.config = new ConfigWrapper(instance, null, "config.yml");
         Playtime.config.createFile(null,
-                "# Playtime By F64_Rx - Need Help? PM me on Spigot or post in the discussion.\r\n"
-                        + "# =================\r\n" + "# | CONFIGURATION |\r\n" + "# =================\r\n" + "\r\n"
-                        + "# available placeholders\r\n" + "# %playtime_player% - returns the player name\r\n"
-                        + "# %offlineplayer% - returns the offline player name\r\n"
-                        + "# %offlinetime% - shows offline time of a player\r\n"
-                        + "# %offlinetimesjoined% - shows the amount of joins a player has had\r\n"
-                        + "# %playtime_time% - shows time played\r\n"
-                        + "# %playtime_timesjoined% - shows the amount of times the player has joined the server\r\n"
-                        + "# %playtime_serveruptime% - shows the uptime of the server\r\n"
-                        + "# %playtime_top_#_place% - shows the place of the top 10\r\n"
-                        + "# %playtime_top_#_name% - shows the name of the top 10\r\n"
-                        + "# %playtime_top_#_time% - shows the time of the top 10\r\n"
-                        + "# You can also use any other placeholder that PlaceholderAPI supports :) \r\n" + "");
+                "Playtime By F64_Rx - Need Help? PM me on Spigot or post in the discussion.\r\n"
+                        + "\r\n"
+                        + " =================\r\n" 
+                        + " | CONFIGURATION |\r\n" 
+                        + " =================\r\n" 
+                        + "\r\n"
+                        + " available placeholders\r\n" 
+                        + " %playtime_player% - returns the player name\r\n"
+                        + " %offlineplayer% - returns the offline player name\r\n"
+                        + " %offlinetime% - shows offline time of a player\r\n"
+                        + " %offlinetimesjoined% - shows the amount of joins a player has had\r\n"
+                        + " %playtime_time% - shows time played\r\n"
+                        + " %playtime_timesjoined% - shows the amount of times the player has joined the server\r\n"
+                        + " %playtime_serveruptime% - shows the uptime of the server\r\n"
+                        + " %playtime_position% - shows the players current position\r\n"
+                        + " %playtime_top_#_name% - shows the name of the top 10\r\n"
+                        + " %playtime_top_#_time% - shows the time of the top 10\r\n"
+                        + " You can also use any other placeholder that PlaceholderAPI supports :) \r\n" 
+                        + "");
         FileConfiguration c = Playtime.config.getConfig();
         c.addDefault("time.second.enabled", true);
         c.addDefault("time.second.prefix", "s");
@@ -66,6 +72,8 @@ public class Playtime implements CommandExecutor {
                 Arrays.asList("&8[&bPlayTime&8] &bServer's total uptime is %playtime_serveruptime%"));
         c.addDefault("messages.reload_config",
                 Arrays.asList("&8[&bPlayTime&8] &bYou have successfully reloaded the config."));
+        c.addDefault("placeholder.top.name", "none");
+        c.addDefault("placeholder.top.time", "-");
         c.options().copyDefaults(true);
         Playtime.config.saveConfig();
     }
