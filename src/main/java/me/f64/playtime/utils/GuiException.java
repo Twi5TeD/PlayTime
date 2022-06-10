@@ -1,4 +1,4 @@
-package me.F64.PlayTime.Utils;
+package me.f64.playtime.utils;
 
 @SuppressWarnings("serial")
 public final class GuiException extends RuntimeException {

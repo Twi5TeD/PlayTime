@@ -1,4 +1,4 @@
-package me.F64.PlayTime.Utils;
+package me.f64.playtime.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,9 +6,8 @@ import java.net.URL;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
+import me.f64.playtime.Main;
 import org.bukkit.Bukkit;
-
-import me.F64.PlayTime.Main;
 
 public class UpdateChecker {
     static Main plugin;

@@ -1,4 +1,4 @@
-package me.F64.PlayTime.PlaceholderAPI;
+package me.f64.playtime.placeholderapi;
 
 import java.io.FileReader;
 import java.time.Duration;
@@ -6,6 +6,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import me.f64.playtime.commands.Playtime;
+import me.f64.playtime.Main;
+import me.f64.playtime.utils.TimeFormat;
+import me.f64.playtime.utils.TopPlayers;
 import org.bukkit.Statistic;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -13,12 +17,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import me.F64.PlayTime.Main;
-import me.F64.PlayTime.Commands.Playtime;
-import me.F64.PlayTime.Commands.PlaytimeTop;
-import me.F64.PlayTime.Utils.Chat;
-import me.F64.PlayTime.Utils.TimeFormat;
-import me.F64.PlayTime.Utils.TopPlayers;
+import me.f64.playtime.commands.PlaytimeTop;
+import me.f64.playtime.utils.Chat;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 public class Expansion extends PlaceholderExpansion {

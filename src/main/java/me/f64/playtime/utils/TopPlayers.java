@@ -1,4 +1,4 @@
-package me.F64.PlayTime.Utils;
+package me.f64.playtime.utils;
 
 public class TopPlayers {
     public String name;
