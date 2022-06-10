@@ -6,7 +6,7 @@
 
     <groupId>com.github.twi5ted</groupId>
     <artifactId>playtime</artifactId>
-    <version>3.2-SNAPSHOT</version>
+    <version>3.2</version>
     <name>PlayTime</name>
     <packaging>jar</packaging>
 
@@ -24,6 +24,32 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <groupId>com.coderplus.maven.plugins</groupId>
+                <artifactId>copy-rename-maven-plugin</artifactId>
+                <version>1.0.1</version>
+                <configuration>
+                    <sourceFile>target/${project.build.finalName}.jar</sourceFile>
+                    <destinationFile>Server/plugins/plugin.jar</destinationFile>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>Server/plugins</directory>
+                            <includes>
+                                <include>**/plugin.jar</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
     <repositories>
