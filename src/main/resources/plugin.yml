@@ -1,8 +1,8 @@
 name: PlayTime
 author: F64_Rx
-version: 3.2
+version: ${project.version}
 description: allows player to see how much they have played for.
-main: me.F64.PlayTime.Main
+main: me.f64.playtime.Main
 depend: [PlaceholderAPI]
 
 commands:

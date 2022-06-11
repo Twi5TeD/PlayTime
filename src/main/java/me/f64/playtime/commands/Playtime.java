@@ -1,10 +1,13 @@
-package me.F64.PlayTime.Commands;
+package me.f64.playtime.commands;
 
 import java.io.FileReader;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 
+import me.f64.playtime.Main;
+import me.f64.playtime.utils.ConfigWrapper;
+import me.f64.playtime.utils.TimeFormat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,10 +16,7 @@ import org.bukkit.entity.Player;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import me.F64.PlayTime.Main;
-import me.F64.PlayTime.Utils.Chat;
-import me.F64.PlayTime.Utils.ConfigWrapper;
-import me.F64.PlayTime.Utils.TimeFormat;
+import me.f64.playtime.utils.Chat;
 
 public class Playtime implements CommandExecutor {
     Main plugin;

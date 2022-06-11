@@ -1,13 +1,13 @@
-package me.F64.PlayTime.Commands;
+package me.f64.playtime.commands;
 
+import me.f64.playtime.Main;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import me.F64.PlayTime.Main;
-import me.F64.PlayTime.Utils.Chat;
+import me.f64.playtime.utils.Chat;
 
 public class Uptime implements CommandExecutor {
     Main plugin;

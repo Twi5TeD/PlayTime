@@ -1,4 +1,4 @@
-package me.F64.PlayTime.Utils;
+package me.f64.playtime.utils;
 
 import com.google.common.primitives.Ints;
 import org.bukkit.Bukkit;

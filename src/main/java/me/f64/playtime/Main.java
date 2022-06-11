@@ -1,4 +1,4 @@
-package me.F64.PlayTime;
+package me.f64.playtime;
 
 import java.io.File;
 import java.io.FileReader;
@@ -20,13 +20,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import me.F64.PlayTime.Commands.Playtime;
-import me.F64.PlayTime.Commands.PlaytimeReload;
-import me.F64.PlayTime.Commands.PlaytimeTop;
-import me.F64.PlayTime.Commands.Uptime;
-import me.F64.PlayTime.PlaceholderAPI.Expansion;
-import me.F64.PlayTime.Utils.Chat;
-import me.F64.PlayTime.Utils.UpdateChecker;
+import me.f64.playtime.commands.Playtime;
+import me.f64.playtime.commands.PlaytimeReload;
+import me.f64.playtime.commands.PlaytimeTop;
+import me.f64.playtime.commands.Uptime;
+import me.f64.playtime.placeholderapi.Expansion;
+import me.f64.playtime.utils.Chat;
+import me.f64.playtime.utils.UpdateChecker;
 
 public class Main extends JavaPlugin implements Listener {
     public static Plugin plugin;
