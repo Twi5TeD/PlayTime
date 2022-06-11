@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,8 +86,30 @@ public class Main extends JavaPlugin implements Listener {
             target.put("lastName", player.getName());
             target.put("time", Integer.valueOf(Chat.ticksPlayed(player) + 1));
             target.put("joins", Integer.valueOf(player.getStatistic(Statistic.LEAVE_GAME) + 1));
+            target.put((Object)"session", (Object)Chat.ticksPlayed(player));
             writePlayer(target);
         }
+    }
+    
+    public int getPlayerSession(final String name) {
+        final JSONParser jsonParser = new JSONParser();
+        try {
+            final FileReader reader = new FileReader(this.storagePath);
+            final JSONArray players = (JSONArray)jsonParser.parse((Reader)reader);
+            for (final Object o : players) {
+                final JSONObject player = (JSONObject)o;
+                if (player.get((Object)"lastName").equals(name)) {
+                    final Player p = Main.plugin.getServer().getPlayer(name);
+                    final int session = Integer.parseInt(player.get((Object)"session").toString());
+                    final int current = Chat.ticksPlayed(p);
+                    return current - session;
+                }
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     @EventHandler
@@ -129,6 +152,7 @@ public class Main extends JavaPlugin implements Listener {
         target.put("lastName", player.getName());
         target.put("time", Integer.valueOf(Chat.ticksPlayed(player)));
         target.put("joins", Integer.valueOf(player.getStatistic(Statistic.LEAVE_GAME) + 1));
+        target.put((Object)"session", (Object)Chat.ticksPlayed(player));
         writePlayer(target);
     }
 

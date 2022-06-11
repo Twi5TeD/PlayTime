@@ -102,6 +102,9 @@ public class Expansion extends PlaceholderExpansion {
             return String.valueOf(player.getName());
         if (commandLabel.equals("time"))
             return String.valueOf(TimeFormat.getTime(Duration.of(Chat.ticksPlayed(player), ChronoUnit.SECONDS)));
+        if (commandLabel.equals("session")) {
+            return String.valueOf(TimeFormat.getTime(Duration.of(Expansion.plugin.getPlayerSession(player.getName()), ChronoUnit.SECONDS)));
+        }
         if (commandLabel.equals("timesjoined"))
             return String.valueOf(player.getStatistic(Statistic.LEAVE_GAME) + 1);
         return null;
