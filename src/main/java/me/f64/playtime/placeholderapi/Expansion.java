@@ -102,6 +102,28 @@ public class Expansion extends PlaceholderExpansion {
             return String.valueOf(player.getName());
         if (commandLabel.equals("time"))
             return String.valueOf(TimeFormat.getTime(Duration.of(Chat.ticksPlayed(player), ChronoUnit.SECONDS)));
+        if (commandLabel.equals("time_seconds"))
+            return String.valueOf(Duration.of(Chat.ticksPlayed(player), ChronoUnit.SECONDS).getSeconds());
+        if (commandLabel.equals("time_minutes")) {
+            long sec = Duration.of(Chat.ticksPlayed(player), ChronoUnit.SECONDS).getSeconds();
+            long min = sec / 60;
+            return String.valueOf(new Long(min).intValue());
+        }
+        if (commandLabel.equals("time_hours")) {
+            long sec = Duration.of(Chat.ticksPlayed(player), ChronoUnit.SECONDS).getSeconds();
+            long min = sec / 60, hour = min / 60;
+            return String.valueOf(new Long(hour).intValue());
+        }
+        if (commandLabel.equals("time_days")) {
+            long sec = Duration.of(Chat.ticksPlayed(player), ChronoUnit.SECONDS).getSeconds();
+            long min = sec / 60, hour = min / 60, day = hour / 24;
+            return String.valueOf(new Long(day).intValue());
+        }
+        if (commandLabel.equals("time_weeks")) {
+            long sec = Duration.of(Chat.ticksPlayed(player), ChronoUnit.SECONDS).getSeconds();
+            long min = sec / 60, hour = min / 60, day = hour / 24, week = day / 7;
+            return String.valueOf(new Long(week).intValue());
+        }
         if (commandLabel.equals("session")) {
             return String.valueOf(TimeFormat.getTime(Duration.of(Expansion.plugin.getPlayerSession(player.getName()), ChronoUnit.SECONDS)));
         }
