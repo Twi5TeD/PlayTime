@@ -14,11 +14,3 @@ commands:
     usage: /<command>
     aliases: [timeplayedtop, ptt]
     description: Shows the playtime of top 10 players!
-  serveruptime:
-    usage: /<command>
-    aliases: [uptime, sp]
-    description: Shows how long the server has been up for!
-  playtimereload:
-    usage: /<command>
-    aliases: [ptreload, ptr]
-    description: reloads config messages!
