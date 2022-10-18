@@ -10,6 +10,8 @@ import java.util.List;
 import me.f64.playtime.Main;
 import me.f64.playtime.utils.ConfigWrapper;
 import me.f64.playtime.utils.TimeFormat;
+import me.f64.playtime.utils.TopPlayers;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -22,21 +24,16 @@ import org.json.simple.parser.JSONParser;
 import me.f64.playtime.utils.Chat;
 
 public class Playtime implements TabExecutor {
-    Main plugin;
+    static Main plugin;
     public static ConfigWrapper config;
 
     public Playtime(Main instance) {
         plugin = instance;
         Playtime.config = new ConfigWrapper(instance, null, "config.yml");
         Playtime.config.createFile(null,
-                "Playtime By F64_Rx - Need Help? PM me on Spigot or post in the discussion.\r\n"
-                        + "\r\n"
-                        + " =================\r\n" 
-                        + " | CONFIGURATION |\r\n" 
-                        + " =================\r\n" 
-                        + "\r\n"
-                        + " available placeholders\r\n" 
-                        + " %playtime_player% - returns the player name\r\n"
+                "Playtime By F64_Rx - Need Help? PM me on Spigot or post in the discussion.\r\n" + "\r\n"
+                        + " =================\r\n" + " | CONFIGURATION |\r\n" + " =================\r\n" + "\r\n"
+                        + " available placeholders\r\n" + " %playtime_player% - returns the player name\r\n"
                         + " %offlineplayer% - returns the offline player name\r\n"
                         + " %offlinetime% - shows offline time of a player\r\n"
                         + " %offlinetimesjoined% - shows the amount of joins a player has had\r\n"
@@ -46,8 +43,7 @@ public class Playtime implements TabExecutor {
                         + " %playtime_position% - shows the players current position\r\n"
                         + " %playtime_top_#_name% - shows the name of the top 10\r\n"
                         + " %playtime_top_#_time% - shows the time of the top 10\r\n"
-                        + " You can also use any other placeholder that PlaceholderAPI supports :) \r\n" 
-                        + "");
+                        + " You can also use any other placeholder that PlaceholderAPI supports :) \r\n" + "");
         FileConfiguration c = Playtime.config.getConfig();
         c.addDefault("time.second.enabled", true);
         c.addDefault("time.second.prefix", "s");
@@ -115,6 +111,45 @@ public class Playtime implements TabExecutor {
         return null;
     }
 
+    public static TopPlayers[] getTopTen() {
+        TopPlayers[] topTen = {};
+        try {
+            JSONParser jsonParser = new JSONParser();
+            FileReader reader = new FileReader(plugin.storagePath);
+            JSONArray players = (JSONArray) jsonParser.parse(reader);
+            int len = Math.min(players.size(), 10);
+            topTen = new TopPlayers[len];
+            for (int i = 0; i < len; ++i) {
+                JSONObject player = (JSONObject) players.get(i);
+                TopPlayers top = new TopPlayers(player.get("lastName").toString(), player.get("uuid").toString(),
+                        Integer.parseInt(player.get("time").toString()));
+                topTen[i] = top;
+            }
+            return topTen;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return topTen;
+    }
+
+    public static TopPlayers[] checkOnlinePlayers(TopPlayers[] top10) {
+        for (Player player : plugin.getServer().getOnlinePlayers())
+            if (Chat.ticksPlayed(player) > (top10.length == 0 ? 0 : top10[top10.length - 1].time)) {
+                TopPlayers top = new TopPlayers(player.getName(), player.getUniqueId().toString(),
+                        Chat.ticksPlayed(player));
+                for (int i = 0; i < top10.length; ++i)
+                    if (top10[i].time <= top.time)
+                        if (top10[i].uuid.equals(top.uuid)) {
+                            top10[i] = top;
+                            break;
+                        } else {
+                            TopPlayers temp = top10[i];
+                            top10[i] = (top = temp);
+                        }
+            }
+        return top10;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (sender instanceof Player) {
@@ -147,6 +182,24 @@ public class Playtime implements TabExecutor {
                         }
                         for (String serverUptime : c.getStringList("messages.server_uptime"))
                             Chat.message(sender, player, serverUptime);
+                    } else if (args[0].equals("top")) {
+                        TopPlayers[] top10;
+                        top10 = getTopTen();
+                        top10 = checkOnlinePlayers(top10);
+                        for (String header : c.getStringList("messages.playtimetop.header"))
+                            Chat.message(sender, player, header);
+                        for (int i = 0; i < top10.length; i++) {
+                            if (top10[i].time == 0) {
+                                break;
+                            }
+                            for (String message : c.getStringList("messages.playtimetop.message"))
+                                Chat.message(sender, player, message.replace("%position%", Integer.toString(i + 1))
+                                        .replace("%player%", top10[i].name).replace("%playtime%",
+                                                TimeFormat.getTime(Duration.of(top10[i].time, ChronoUnit.SECONDS))));
+                        }
+                        for (String footer : c.getStringList("messages.playtimetop.footer"))
+                            Chat.message(sender, player, footer);
+
                     } else {
                         Player target = plugin.getServer().getPlayer(args[0]);
                         if (target == null) {
@@ -158,9 +211,10 @@ public class Playtime implements TabExecutor {
                             } else {
                                 for (String offlinePlayers : c.getStringList("messages.offline_players"))
                                     Chat.message(sender, target,
-                                            offlinePlayers.replace("%offlineplayer%", args[0]).replace("%offlinetime%",
-                                                            TimeFormat.getTime(
-                                                                    Duration.of(Integer.valueOf(storedTime), ChronoUnit.SECONDS)))
+                                            offlinePlayers.replace("%offlineplayer%", args[0])
+                                                    .replace("%offlinetime%",
+                                                            TimeFormat.getTime(Duration.of(Integer.valueOf(storedTime),
+                                                                    ChronoUnit.SECONDS)))
                                                     .replace("%offlinetimesjoined%", storedJoins));
                             }
                         } else {
@@ -173,20 +227,16 @@ public class Playtime implements TabExecutor {
             return true;
         }
         return false;
-
-
     }
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String label, String[] args) {
         List<String> tabComplete = new ArrayList<>();
-
         tabComplete.add("reload");
         tabComplete.add("uptime");
-
+        tabComplete.add("top");
         for (Player p : plugin.getServer().getOnlinePlayers())
             tabComplete.add(p.getName());
-
         if (args.length == 1) {
             return StringUtil.copyPartialMatches(args[0], tabComplete, new ArrayList<>());
         }

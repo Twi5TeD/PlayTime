@@ -9,8 +9,4 @@ commands:
   playtime:
     usage: /<command>
     aliases: [timeplayed, pt]
-    description: Shows the playtime of a player!
-  playtimetop:
-    usage: /<command>
-    aliases: [timeplayedtop, ptt]
-    description: Shows the playtime of top 10 players!
+    description: Main command for Playtime!

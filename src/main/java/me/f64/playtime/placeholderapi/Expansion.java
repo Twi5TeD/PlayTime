@@ -17,7 +17,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import me.f64.playtime.commands.PlaytimeTop;
 import me.f64.playtime.utils.Chat;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
@@ -57,8 +56,8 @@ public class Expansion extends PlaceholderExpansion {
 
     public String get(int pos, String type) {
         FileConfiguration c = Playtime.config.getConfig();
-        TopPlayers[] top10 = PlaytimeTop.getTopTen();
-        top10 = PlaytimeTop.checkOnlinePlayers(top10);
+        TopPlayers[] top10 = Playtime.getTopTen();
+        top10 = Playtime.checkOnlinePlayers(top10);
         if (top10.length <= pos - 1)
             return type.equals("name") ? Chat.format(c.getString("placeholder.top.name"))
                     : Chat.format(c.getString("placeholder.top.time"));
