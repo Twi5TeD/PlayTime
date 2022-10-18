@@ -3,22 +3,25 @@ package me.f64.playtime.commands;
 import java.io.FileReader;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import me.f64.playtime.Main;
 import me.f64.playtime.utils.ConfigWrapper;
 import me.f64.playtime.utils.TimeFormat;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import me.f64.playtime.utils.Chat;
 
-public class Playtime implements CommandExecutor {
+public class Playtime implements TabExecutor {
     Main plugin;
     public static ConfigWrapper config;
 
@@ -112,6 +115,7 @@ public class Playtime implements CommandExecutor {
         return null;
     }
 
+    @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
@@ -126,29 +130,66 @@ public class Playtime implements CommandExecutor {
                     for (String thisPlayer : c.getStringList("messages.player"))
                         Chat.message(sender, player, thisPlayer);
                 } else {
-                    Player target = plugin.getServer().getPlayer(args[0]);
-                    if (target == null) {
-                        String storedTime = getPlayerTime(args[0]);
-                        String storedJoins = getPlayerJoins(args[0]);
-                        if (storedTime == null || storedJoins == null) {
-                            for (String notOnline : c.getStringList("messages.doesnt_exist"))
-                                Chat.message(sender, target, notOnline.replace("%offlineplayer%", args[0]));
-                        } else {
-                            for (String offlinePlayers : c.getStringList("messages.offline_players"))
-                                Chat.message(sender, target,
-                                        offlinePlayers.replace("%offlineplayer%", args[0]).replace("%offlinetime%",
-                                                TimeFormat.getTime(
-                                                        Duration.of(Integer.valueOf(storedTime), ChronoUnit.SECONDS)))
-                                                .replace("%offlinetimesjoined%", String.valueOf(storedJoins)));
+                    if (args[0].equals("reload")) {
+                        if (!(sender.hasPermission("playtime.reload"))) {
+                            for (String noPermission : c.getStringList("messages.no_permission"))
+                                Chat.message(sender, player, noPermission);
+                            return true;
                         }
+                        for (String reloadConfig : c.getStringList("messages.reload_config"))
+                            Chat.message(sender, player, reloadConfig);
+                        Playtime.config.reloadConfig();
+                    } else if (args[0].equals("uptime")) {
+                        if (!(sender.hasPermission("playtime.uptime"))) {
+                            for (String noPermission : c.getStringList("messages.no_permission"))
+                                Chat.message(sender, player, noPermission);
+                            return true;
+                        }
+                        for (String serverUptime : c.getStringList("messages.server_uptime"))
+                            Chat.message(sender, player, serverUptime);
                     } else {
-                        for (String otherPlayer : c.getStringList("messages.other_players"))
-                            Chat.message(player, target, otherPlayer);
+                        Player target = plugin.getServer().getPlayer(args[0]);
+                        if (target == null) {
+                            String storedTime = getPlayerTime(args[0]);
+                            String storedJoins = getPlayerJoins(args[0]);
+                            if (storedTime == null || storedJoins == null) {
+                                for (String notOnline : c.getStringList("messages.doesnt_exist"))
+                                    Chat.message(sender, target, notOnline.replace("%offlineplayer%", args[0]));
+                            } else {
+                                for (String offlinePlayers : c.getStringList("messages.offline_players"))
+                                    Chat.message(sender, target,
+                                            offlinePlayers.replace("%offlineplayer%", args[0]).replace("%offlinetime%",
+                                                            TimeFormat.getTime(
+                                                                    Duration.of(Integer.valueOf(storedTime), ChronoUnit.SECONDS)))
+                                                    .replace("%offlinetimesjoined%", storedJoins));
+                            }
+                        } else {
+                            for (String otherPlayer : c.getStringList("messages.other_players"))
+                                Chat.message(player, target, otherPlayer);
+                        }
                     }
                 }
             }
             return true;
         }
         return false;
+
+
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender commandSender, Command command, String label, String[] args) {
+        List<String> tabComplete = new ArrayList<>();
+
+        tabComplete.add("reload");
+        tabComplete.add("uptime");
+
+        for (Player p : plugin.getServer().getOnlinePlayers())
+            tabComplete.add(p.getName());
+
+        if (args.length == 1) {
+            return StringUtil.copyPartialMatches(args[0], tabComplete, new ArrayList<>());
+        }
+        return null;
     }
 }

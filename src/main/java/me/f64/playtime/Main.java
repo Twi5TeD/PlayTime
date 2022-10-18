@@ -22,9 +22,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import me.f64.playtime.commands.Playtime;
-import me.f64.playtime.commands.PlaytimeReload;
 import me.f64.playtime.commands.PlaytimeTop;
-import me.f64.playtime.commands.Uptime;
 import me.f64.playtime.placeholderapi.Expansion;
 import me.f64.playtime.utils.Chat;
 import me.f64.playtime.utils.UpdateChecker;
@@ -37,9 +35,7 @@ public class Main extends JavaPlugin implements Listener {
     public void onEnable() {
         plugin = this;
         getCommand("playtime").setExecutor(new Playtime(this));
-        getCommand("serveruptime").setExecutor(new Uptime(this));
         getCommand("playtimetop").setExecutor(new PlaytimeTop(this));
-        getCommand("playtimereload").setExecutor(new PlaytimeReload(this));
         checkStorage();
         placeholderAPI();
         updateChecker();
