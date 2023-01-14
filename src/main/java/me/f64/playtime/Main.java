@@ -78,36 +78,35 @@ public class Main extends JavaPlugin implements Listener {
         if (!(player.hasPlayedBefore())) {
             target.put("uuid", player.getUniqueId().toString());
             target.put("lastName", player.getName());
-            target.put("time", Integer.valueOf(Chat.ticksPlayed(player) + 1));
-            target.put("joins", Integer.valueOf(player.getStatistic(Statistic.LEAVE_GAME) + 1));
-            target.put((Object)"session", (Object)Chat.ticksPlayed(player));
-            writePlayer(target);
+            target.put("time", Chat.ticksPlayed(player) + 1);
+            target.put("joins", player.getStatistic(Statistic.LEAVE_GAME) + 1);
+            target.put("session", Chat.ticksPlayed(player));
+            Bukkit.getScheduler().runTaskAsynchronously(this, () -> writePlayer(target));
         }
     }
-    
+
     public int getPlayerSession(final String name) {
         final JSONParser jsonParser = new JSONParser();
         try {
             final FileReader reader = new FileReader(this.storagePath);
-            final JSONArray players = (JSONArray)jsonParser.parse((Reader)reader);
+            final JSONArray players = (JSONArray) jsonParser.parse(reader);
             for (final Object o : players) {
-                final JSONObject player = (JSONObject)o;
-                if (player.get((Object)"lastName").equals(name)) {
+                final JSONObject player = (JSONObject) o;
+                if (player.get("lastName").equals(name)) {
                     final Player p = Main.plugin.getServer().getPlayer(name);
-                    final int session = Integer.parseInt(player.get((Object)"session").toString());
+                    final int session = Integer.parseInt(player.get("session").toString());
                     final int current = Chat.ticksPlayed(p);
                     return current - session;
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return 0;
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent e) throws UnknownHostException {
+    public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         if (e.getPlayer().getName().equals("itemnames")) {
             new UpdateChecker(this, 26016).getVersion(version -> {
@@ -144,14 +143,20 @@ public class Main extends JavaPlugin implements Listener {
         JSONObject target = new JSONObject();
         target.put("uuid", player.getUniqueId().toString());
         target.put("lastName", player.getName());
-        target.put("time", Integer.valueOf(Chat.ticksPlayed(player)));
-        target.put("joins", Integer.valueOf(player.getStatistic(Statistic.LEAVE_GAME) + 1));
-        target.put((Object)"session", (Object)Chat.ticksPlayed(player));
-        writePlayer(target);
+        target.put("time", Chat.ticksPlayed(player));
+        target.put("joins", player.getStatistic(Statistic.LEAVE_GAME) + 1);
+        target.put("session", Chat.ticksPlayed(player));
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> writePlayer(target));
     }
 
     @SuppressWarnings("unchecked")
     private void writePlayer(JSONObject target) {
+        if (Bukkit.isPrimaryThread()) {
+            final JSONObject finalTarget = target;
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> writePlayer(finalTarget));
+            return;
+        }
+
         JSONParser jsonParser = new JSONParser();
         try {
             FileReader reader = new FileReader(storagePath);
