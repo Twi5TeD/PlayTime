@@ -146,12 +146,15 @@ public class Main extends JavaPlugin implements Listener {
         target.put("time", Chat.ticksPlayed(player));
         target.put("joins", player.getStatistic(Statistic.LEAVE_GAME) + 1);
         target.put("session", Chat.ticksPlayed(player));
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> writePlayer(target));
+
+        if (!Bukkit.getPluginManager().isPluginEnabled(this))
+            writePlayer(target);
+        else Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> writePlayer(target));
     }
 
     @SuppressWarnings("unchecked")
     private void writePlayer(JSONObject target) {
-        if (Bukkit.isPrimaryThread()) {
+        if (Bukkit.getPluginManager().isPluginEnabled(this) && Bukkit.isPrimaryThread()) {
             final JSONObject finalTarget = target;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> writePlayer(finalTarget));
             return;
