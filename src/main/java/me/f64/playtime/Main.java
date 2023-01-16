@@ -146,7 +146,8 @@ public class Main extends JavaPlugin implements Listener {
         target.put("session", Chat.ticksPlayed(player));
         if (!Bukkit.getPluginManager().isPluginEnabled(this))
             writePlayer(target);
-        else Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> writePlayer(target));
+        else
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> writePlayer(target));
     }
 
     @SuppressWarnings("unchecked")
@@ -156,6 +157,7 @@ public class Main extends JavaPlugin implements Listener {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> writePlayer(finalTarget));
             return;
         }
+
         JSONParser jsonParser = new JSONParser();
         try {
             FileReader reader = new FileReader(storagePath);
