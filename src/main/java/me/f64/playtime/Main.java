@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -146,17 +144,18 @@ public class Main extends JavaPlugin implements Listener {
         target.put("time", Chat.ticksPlayed(player));
         target.put("joins", player.getStatistic(Statistic.LEAVE_GAME) + 1);
         target.put("session", Chat.ticksPlayed(player));
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> writePlayer(target));
+        if (!Bukkit.getPluginManager().isPluginEnabled(this))
+            writePlayer(target);
+        else Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> writePlayer(target));
     }
 
     @SuppressWarnings("unchecked")
     private void writePlayer(JSONObject target) {
-        if (Bukkit.isPrimaryThread()) {
+        if (Bukkit.getPluginManager().isPluginEnabled(this) && Bukkit.isPrimaryThread()) {
             final JSONObject finalTarget = target;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> writePlayer(finalTarget));
             return;
         }
-
         JSONParser jsonParser = new JSONParser();
         try {
             FileReader reader = new FileReader(storagePath);
