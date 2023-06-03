@@ -1,11 +1,10 @@
 package me.f64.playtime.commands;
 
+import java.io.File;
 import java.io.FileReader;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import me.f64.playtime.Main;
 import me.f64.playtime.utils.ConfigWrapper;
@@ -80,14 +79,10 @@ public class Playtime implements TabExecutor {
     public String getPlayerTime(String name) {
         JSONParser jsonParser = new JSONParser();
         try {
-            FileReader reader = new FileReader(plugin.storagePath);
-            JSONArray players = (JSONArray) jsonParser.parse(reader);
-            for (Object o : players) {
-                JSONObject player = (JSONObject) o;
-                if (player.get("lastName").equals(name)) {
-                    return player.get("time").toString();
-                }
-            }
+            FileReader reader = new FileReader(plugin.getPlayerPath(name));
+            JSONObject player = (JSONObject) jsonParser.parse(reader);
+            reader.close();
+            return player.get("time").toString();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -97,14 +92,10 @@ public class Playtime implements TabExecutor {
     public String getPlayerJoins(String name) {
         JSONParser jsonParser = new JSONParser();
         try {
-            FileReader reader = new FileReader(plugin.storagePath);
-            JSONArray players = (JSONArray) jsonParser.parse(reader);
-            for (Object o : players) {
-                JSONObject player = (JSONObject) o;
-                if (player.get("lastName").equals(name)) {
-                    return player.get("joins").toString();
-                }
-            }
+            FileReader reader = new FileReader(plugin.getPlayerPath(name));
+            JSONObject player = (JSONObject) jsonParser.parse(reader);
+            reader.close();
+            return player.get("joins").toString();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -115,17 +106,37 @@ public class Playtime implements TabExecutor {
         TopPlayers[] topTen = {};
         try {
             JSONParser jsonParser = new JSONParser();
-            FileReader reader = new FileReader(plugin.storagePath);
-            JSONArray players = (JSONArray) jsonParser.parse(reader);
-            int len = Math.min(players.size(), 10);
-            topTen = new TopPlayers[len];
-            for (int i = 0; i < len; ++i) {
-                JSONObject player = (JSONObject) players.get(i);
-                TopPlayers top = new TopPlayers(player.get("lastName").toString(), player.get("uuid").toString(),
-                        Integer.parseInt(player.get("time").toString()));
-                topTen[i] = top;
+
+            File dir = new File(plugin.storagePath);
+
+            File[] fileList = dir.listFiles();
+
+            if (fileList != null) {
+                ArrayList<TopPlayers> allPlayers = new ArrayList<>();
+
+                for (File jsonFile : fileList) {
+                    FileReader reader = new FileReader(jsonFile);
+                    JSONObject player = (JSONObject) jsonParser.parse(reader);
+                    reader.close();
+
+                    allPlayers.add(new TopPlayers(player.get("lastName").toString(), player.get("uuid").toString(),
+                            Integer.parseInt(player.get("time").toString())));
+                }
+
+                allPlayers.sort(Comparator.comparing(e -> e.time));
+                Collections.reverse(allPlayers);
+
+                int len = Math.min(allPlayers.size(), 10);
+                topTen = new TopPlayers[len];
+                topTen[0] = allPlayers.get(0);
+
+                for (int i = 0; i < len; ++i) {
+                    topTen[i] = allPlayers.get(i);
+                }
+                return topTen;
+            } else {
+                return topTen;
             }
-            return topTen;
         } catch (Exception e) {
             e.printStackTrace();
         }

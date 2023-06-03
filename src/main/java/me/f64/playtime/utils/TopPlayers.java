@@ -3,7 +3,7 @@ package me.f64.playtime.utils;
 public class TopPlayers {
     public String name;
     public String uuid;
-    public int time;
+    public Integer time;
 
     public TopPlayers() {
         time = 0;
