@@ -1,12 +1,12 @@
 package me.f64.playtime;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+import jdk.internal.misc.FileSystemOption;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
@@ -27,6 +27,8 @@ import me.f64.playtime.utils.UpdateChecker;
 public class Main extends JavaPlugin implements Listener {
     public static Plugin plugin;
     public String storagePath = getDataFolder() + "/data/";
+
+    public HashMap<String, Long> Sessions = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -73,13 +75,49 @@ public class Main extends JavaPlugin implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         JSONObject target = new JSONObject();
+        Sessions.put(player.getUniqueId().toString(), System.currentTimeMillis());
+
+        Chat chat = new Chat(this);
         if (!(player.hasPlayedBefore())) {
             target.put("uuid", player.getUniqueId().toString());
             target.put("lastName", player.getName());
-            target.put("time", Chat.ticksPlayed(player) + 1);
+            target.put("time", chat.ticksPlayed(player) + 1);
             target.put("joins", player.getStatistic(Statistic.LEAVE_GAME) + 1);
-            target.put("session", Chat.ticksPlayed(player));
+            target.put("session", chat.ticksPlayed(player));
             Bukkit.getScheduler().runTaskAsynchronously(this, () -> writePlayer(target));
+        } else {
+            final JSONParser jsonParser = new JSONParser();
+            try {
+                final FileReader reader = new FileReader(getPlayerPath(player.getName()));
+                final JSONObject playerJSON = (JSONObject) jsonParser.parse(reader);
+                reader.close();
+
+                boolean changed = false;
+                if(chat.ticksPlayed(player) + 1 > Integer.parseInt(playerJSON.get("time").toString())) {
+                    target.put("time", chat.ticksPlayed(player) + 1);
+                    changed = true;
+                } else {
+                    target.put("time", Integer.parseInt(playerJSON.get("time").toString()));
+                }
+                System.out.println(player.getStatistic(Statistic.LEAVE_GAME));
+                System.out.println(Integer.parseInt(playerJSON.get("joins").toString()));
+
+                if(player.getStatistic(Statistic.LEAVE_GAME) > Integer.parseInt(playerJSON.get("joins").toString())) {
+                    target.put("joins", player.getStatistic(Statistic.LEAVE_GAME));
+                    changed = true;
+                } else {
+                    target.put("joins", Integer.parseInt(playerJSON.get("joins").toString()));
+                }
+                if(changed) {
+                    target.put("uuid", player.getUniqueId().toString());
+                    target.put("lastName", player.getName());
+                    target.put("session", chat.ticksPlayed(player));
+                    Bukkit.getScheduler().runTaskAsynchronously(this, () -> writePlayer(target));
+                }
+
+            } catch (Exception ex){
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -90,11 +128,11 @@ public class Main extends JavaPlugin implements Listener {
             final JSONObject player = (JSONObject) jsonParser.parse(reader);
             reader.close();
 
-            //TODO file not available
             if (player.get("lastName").equals(name)) {
+                Chat chat = new Chat(this);
                 final Player p = Main.plugin.getServer().getPlayer(name);
                 final int session = Integer.parseInt(player.get("session").toString());
-                final int current = Chat.ticksPlayed(p);
+                final int current = chat.ticksPlayed(p);
                 return current - session;
             }
 
@@ -161,11 +199,36 @@ public class Main extends JavaPlugin implements Listener {
     @SuppressWarnings("unchecked")
     public void savePlayer(Player player) {
         JSONObject target = new JSONObject();
-        target.put("uuid", player.getUniqueId().toString());
-        target.put("lastName", player.getName());
-        target.put("time", Chat.ticksPlayed(player));
-        target.put("joins", player.getStatistic(Statistic.LEAVE_GAME) + 1);
-        target.put("session", Chat.ticksPlayed(player));
+
+        String uuid = player.getUniqueId().toString();
+        int sessionOnTime =(int) (System.currentTimeMillis() - Sessions.get(uuid)) / 50;
+        Sessions.remove(uuid);
+
+        try {
+            FileReader reader = new FileReader(getPlayerPath(player.getName()));
+
+            JSONParser jsonParser = new JSONParser();
+            JSONObject oldData = (JSONObject) jsonParser.parse(reader);
+            reader.close();
+
+            target.put("uuid", uuid);
+            target.put("lastName", player.getName());
+            target.put("time", Integer.parseInt(oldData.get("time").toString()) + sessionOnTime);
+            target.put("joins", Integer.parseInt(oldData.get("joins").toString()) + 1);
+            target.put("session", sessionOnTime);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            // try legacy method
+            Chat chat = new Chat(this);
+            target.put("uuid", uuid);
+            target.put("lastName", player.getName());
+            target.put("time", chat.ticksPlayed(player));
+            target.put("joins", player.getStatistic(Statistic.LEAVE_GAME) + 1);
+            target.put("session", chat.ticksPlayed(player));
+        }
+
+
         if (!Bukkit.getPluginManager().isPluginEnabled(this))
             writePlayer(target);
         else

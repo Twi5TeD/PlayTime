@@ -120,7 +120,7 @@ public class Playtime implements TabExecutor {
                     reader.close();
 
                     allPlayers.add(new TopPlayers(player.get("lastName").toString(), player.get("uuid").toString(),
-                            Integer.parseInt(player.get("time").toString())));
+                            Integer.parseInt(player.get("time").toString() )));
                 }
 
                 allPlayers.sort(Comparator.comparing(e -> e.time));
@@ -133,10 +133,8 @@ public class Playtime implements TabExecutor {
                 for (int i = 0; i < len; ++i) {
                     topTen[i] = allPlayers.get(i);
                 }
-                return topTen;
-            } else {
-                return topTen;
             }
+            return topTen;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -144,10 +142,11 @@ public class Playtime implements TabExecutor {
     }
 
     public static TopPlayers[] checkOnlinePlayers(TopPlayers[] top10) {
+        Chat chat = new Chat(plugin);
         for (Player player : plugin.getServer().getOnlinePlayers())
-            if (Chat.ticksPlayed(player) > (top10.length == 0 ? 0 : top10[top10.length - 1].time)) {
+            if (chat.ticksPlayed(player) > (top10.length == 0 ? 0 : top10[top10.length - 1].time)) {
                 TopPlayers top = new TopPlayers(player.getName(), player.getUniqueId().toString(),
-                        Chat.ticksPlayed(player));
+                        chat.ticksPlayed(player));
                 for (int i = 0; i < top10.length; ++i)
                     if (top10[i].time <= top.time)
                         if (top10[i].uuid.equals(top.uuid)) {
