@@ -99,8 +99,6 @@ public class Main extends JavaPlugin implements Listener {
                 } else {
                     target.put("time", Integer.parseInt(playerJSON.get("time").toString()));
                 }
-                System.out.println(player.getStatistic(Statistic.LEAVE_GAME));
-                System.out.println(Integer.parseInt(playerJSON.get("joins").toString()));
 
                 if(player.getStatistic(Statistic.LEAVE_GAME) > Integer.parseInt(playerJSON.get("joins").toString())) {
                     target.put("joins", player.getStatistic(Statistic.LEAVE_GAME));
