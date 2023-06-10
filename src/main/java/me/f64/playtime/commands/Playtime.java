@@ -183,6 +183,11 @@ public class Playtime implements TabExecutor {
                         for (String serverUptime : c.getStringList("messages.server_uptime"))
                             Chat.message(sender, player, serverUptime);
                     } else if (args[0].equals("top")) {
+                        if (!(sender.hasPermission("playtime.checktop"))) {
+                            for (String noPermission : c.getStringList("messages.no_permission"))
+                                Chat.message(sender, player, noPermission);
+                            return true;
+                        }
                         TopPlayers[] top10;
                         top10 = getTopTen();
                         top10 = checkOnlinePlayers(top10);
@@ -201,6 +206,11 @@ public class Playtime implements TabExecutor {
                             Chat.message(sender, player, footer);
 
                     } else {
+                        if (!(sender.hasPermission("playtime.checkothers"))) {
+                            for (String noPermission : c.getStringList("messages.no_permission"))
+                                Chat.message(sender, player, noPermission);
+                            return true;
+                        }
                         Player target = plugin.getServer().getPlayer(args[0]);
                         if (target == null) {
                             String storedTime = getPlayerTime(args[0]);
