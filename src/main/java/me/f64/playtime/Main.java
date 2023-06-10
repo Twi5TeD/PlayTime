@@ -1,12 +1,12 @@
 package me.f64.playtime;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+import jdk.internal.misc.FileSystemOption;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
@@ -26,7 +26,9 @@ import me.f64.playtime.utils.UpdateChecker;
 
 public class Main extends JavaPlugin implements Listener {
     public static Plugin plugin;
-    public String storagePath = getDataFolder() + "/userdata.json";
+    public String storagePath = getDataFolder() + "/data/";
+
+    public HashMap<String, Long> Sessions = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -73,30 +75,65 @@ public class Main extends JavaPlugin implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         JSONObject target = new JSONObject();
+        Sessions.put(player.getUniqueId().toString(), System.currentTimeMillis());
+
+        Chat chat = new Chat(this);
         if (!(player.hasPlayedBefore())) {
             target.put("uuid", player.getUniqueId().toString());
             target.put("lastName", player.getName());
-            target.put("time", Chat.ticksPlayed(player) + 1);
+            target.put("time", chat.ticksPlayed(player) + 1);
             target.put("joins", player.getStatistic(Statistic.LEAVE_GAME) + 1);
-            target.put("session", Chat.ticksPlayed(player));
+            target.put("session", chat.ticksPlayed(player));
             Bukkit.getScheduler().runTaskAsynchronously(this, () -> writePlayer(target));
+        } else {
+            final JSONParser jsonParser = new JSONParser();
+            try {
+                final FileReader reader = new FileReader(getPlayerPath(player.getName()));
+                final JSONObject playerJSON = (JSONObject) jsonParser.parse(reader);
+                reader.close();
+
+                boolean changed = false;
+                if(chat.ticksPlayed(player) + 1 > Integer.parseInt(playerJSON.get("time").toString())) {
+                    target.put("time", chat.ticksPlayed(player) + 1);
+                    changed = true;
+                } else {
+                    target.put("time", Integer.parseInt(playerJSON.get("time").toString()));
+                }
+
+                if(player.getStatistic(Statistic.LEAVE_GAME) > Integer.parseInt(playerJSON.get("joins").toString())) {
+                    target.put("joins", player.getStatistic(Statistic.LEAVE_GAME));
+                    changed = true;
+                } else {
+                    target.put("joins", Integer.parseInt(playerJSON.get("joins").toString()));
+                }
+                if(changed) {
+                    target.put("uuid", player.getUniqueId().toString());
+                    target.put("lastName", player.getName());
+                    target.put("session", chat.ticksPlayed(player));
+                    Bukkit.getScheduler().runTaskAsynchronously(this, () -> writePlayer(target));
+                }
+
+            } catch (Exception ex){
+                ex.printStackTrace();
+            }
         }
     }
 
     public int getPlayerSession(final String name) {
         final JSONParser jsonParser = new JSONParser();
         try {
-            final FileReader reader = new FileReader(this.storagePath);
-            final JSONArray players = (JSONArray) jsonParser.parse(reader);
-            for (final Object o : players) {
-                final JSONObject player = (JSONObject) o;
-                if (player.get("lastName").equals(name)) {
-                    final Player p = Main.plugin.getServer().getPlayer(name);
-                    final int session = Integer.parseInt(player.get("session").toString());
-                    final int current = Chat.ticksPlayed(p);
-                    return current - session;
-                }
+            final FileReader reader = new FileReader(getPlayerPath(name));
+            final JSONObject player = (JSONObject) jsonParser.parse(reader);
+            reader.close();
+
+            if (player.get("lastName").equals(name)) {
+                Chat chat = new Chat(this);
+                final Player p = Main.plugin.getServer().getPlayer(name);
+                final int session = Integer.parseInt(player.get("session").toString());
+                final int current = chat.ticksPlayed(p);
+                return current - session;
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -124,26 +161,72 @@ public class Main extends JavaPlugin implements Listener {
         if (!pluginFolder.exists()) {
             pluginFolder.mkdirs();
         }
-        File userdataFile = new File(storagePath);
-        if (!userdataFile.exists()) {
+        File dataFolder = new File(getDataFolder() + "/data");
+
+        if (!dataFolder.exists()) {
+                dataFolder.mkdirs();
+        }
+
+        String legacyFilePath = getDataFolder() + "/userdata.json";
+        File userdataFile = new File(legacyFilePath);
+        if(userdataFile.exists()) {
+            JSONParser jsonParser = new JSONParser();
             try {
-                FileWriter writer = new FileWriter(userdataFile.getAbsoluteFile());
-                writer.write("[]");
-                writer.close();
-            } catch (IOException e) {
+                FileReader reader = new FileReader(legacyFilePath);
+                JSONArray players = (JSONArray) jsonParser.parse(reader);
+                reader.close();
+                List<JSONObject> list = new ArrayList<>();
+                for (Object player : players) {
+                    JSONObject player_JSON = (JSONObject) player;
+                    writePlayer(player_JSON);
+                }
+
+                File newFileName = new File(getDataFolder() + "/userdata_old.json");
+
+                if(!newFileName.exists()) {
+                    userdataFile.renameTo(newFileName);
+                }
+
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
     }
 
     @SuppressWarnings("unchecked")
     public void savePlayer(Player player) {
         JSONObject target = new JSONObject();
-        target.put("uuid", player.getUniqueId().toString());
-        target.put("lastName", player.getName());
-        target.put("time", Chat.ticksPlayed(player));
-        target.put("joins", player.getStatistic(Statistic.LEAVE_GAME) + 1);
-        target.put("session", Chat.ticksPlayed(player));
+
+        String uuid = player.getUniqueId().toString();
+        int sessionOnTime =(int) (System.currentTimeMillis() - Sessions.get(uuid)) / 50;
+        Sessions.remove(uuid);
+
+        try {
+            FileReader reader = new FileReader(getPlayerPath(player.getName()));
+
+            JSONParser jsonParser = new JSONParser();
+            JSONObject oldData = (JSONObject) jsonParser.parse(reader);
+            reader.close();
+
+            target.put("uuid", uuid);
+            target.put("lastName", player.getName());
+            target.put("time", Integer.parseInt(oldData.get("time").toString()) + sessionOnTime);
+            target.put("joins", Integer.parseInt(oldData.get("joins").toString()) + 1);
+            target.put("session", sessionOnTime);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            // try legacy method
+            Chat chat = new Chat(this);
+            target.put("uuid", uuid);
+            target.put("lastName", player.getName());
+            target.put("time", chat.ticksPlayed(player));
+            target.put("joins", player.getStatistic(Statistic.LEAVE_GAME) + 1);
+            target.put("session", chat.ticksPlayed(player));
+        }
+
+
         if (!Bukkit.getPluginManager().isPluginEnabled(this))
             writePlayer(target);
         else
@@ -152,6 +235,8 @@ public class Main extends JavaPlugin implements Listener {
 
     @SuppressWarnings("unchecked")
     private void writePlayer(JSONObject target) {
+        String playerPath = getPlayerPath((String) target.get("lastName"));
+
         if (Bukkit.getPluginManager().isPluginEnabled(this) && Bukkit.isPrimaryThread()) {
             final JSONObject finalTarget = target;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> writePlayer(finalTarget));
@@ -160,31 +245,35 @@ public class Main extends JavaPlugin implements Listener {
 
         JSONParser jsonParser = new JSONParser();
         try {
-            FileReader reader = new FileReader(storagePath);
-            JSONArray players = (JSONArray) jsonParser.parse(reader);
-            List<JSONObject> list = new ArrayList<>();
-            for (Object player : players) {
-                JSONObject player_JSON = (JSONObject) player;
-                if (!player_JSON.get("uuid").equals(target.get("uuid")))
-                    list.add(player_JSON);
-            }
-            for (int i = 0; i < list.size(); i++) {
-                if (Integer.parseInt(target.get("time").toString()) > Integer
-                        .parseInt(list.get(i).get("time").toString())) {
-                    JSONObject temp = list.get(i);
-                    list.set(i, target);
-                    target = temp;
+            File userdataFile = new File(playerPath);
+            if(!userdataFile.exists()) {
+                try {
+                    FileWriter writer = new FileWriter(userdataFile.getAbsoluteFile());
+                    writer.write("{}");
+                    writer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
-            list.add(target);
-            JSONArray sortedPlayers = new JSONArray();
-            sortedPlayers.addAll(list);
-            FileWriter writer = new FileWriter(storagePath);
-            writer.write(sortedPlayers.toJSONString());
-            writer.flush();
-            writer.close();
+
+            FileReader reader = new FileReader(playerPath);
+            JSONObject oldData = (JSONObject) jsonParser.parse(reader);
+            reader.close();
+
+            if (oldData.get("time") == null || Integer.parseInt(target.get("time").toString()) > Integer
+                    .parseInt(oldData.get("time").toString())) {
+                FileWriter writer = new FileWriter(playerPath);
+                writer.write(target.toJSONString());
+                writer.flush();
+                writer.close();
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public String getPlayerPath(String name) {
+        return storagePath + name + ".json";
     }
 }
