@@ -12,7 +12,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.FileReader;
-import java.util.concurrent.ExecutionException;
 
 public class Chat {
     static Main plugin;
@@ -42,7 +41,8 @@ public class Chat {
             JSONObject playerJson = (JSONObject) jsonParser.parse(reader);
             reader.close();
 
-            int sessionOnTime = (int) (System.currentTimeMillis() - plugin.Sessions.get(player.getUniqueId().toString())) / 1000;
+            int sessionOnTime = (int) (System.currentTimeMillis()
+                    - plugin.Sessions.get(player.getUniqueId().toString())) / 1000;
 
             return Integer.parseInt(playerJson.get("time").toString()) + sessionOnTime;
         } catch (Exception e) {

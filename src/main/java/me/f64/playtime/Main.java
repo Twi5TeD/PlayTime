@@ -1,12 +1,11 @@
 package me.f64.playtime;
 
-import java.io.*;
-import java.util.ArrayList;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
-import jdk.internal.misc.FileSystemOption;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
@@ -19,6 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
 import me.f64.playtime.commands.Playtime;
 import me.f64.playtime.placeholderapi.Expansion;
 import me.f64.playtime.utils.Chat;
@@ -93,27 +93,27 @@ public class Main extends JavaPlugin implements Listener {
                 reader.close();
 
                 boolean changed = false;
-                if(chat.ticksPlayed(player) + 1 > Integer.parseInt(playerJSON.get("time").toString())) {
+                if (chat.ticksPlayed(player) + 1 > Integer.parseInt(playerJSON.get("time").toString())) {
                     target.put("time", chat.ticksPlayed(player) + 1);
                     changed = true;
                 } else {
                     target.put("time", Integer.parseInt(playerJSON.get("time").toString()));
                 }
 
-                if(player.getStatistic(Statistic.LEAVE_GAME) > Integer.parseInt(playerJSON.get("joins").toString())) {
+                if (player.getStatistic(Statistic.LEAVE_GAME) > Integer.parseInt(playerJSON.get("joins").toString())) {
                     target.put("joins", player.getStatistic(Statistic.LEAVE_GAME));
                     changed = true;
                 } else {
                     target.put("joins", Integer.parseInt(playerJSON.get("joins").toString()));
                 }
-                if(changed) {
+                if (changed) {
                     target.put("uuid", player.getUniqueId().toString());
                     target.put("lastName", player.getName());
                     target.put("session", chat.ticksPlayed(player));
                     Bukkit.getScheduler().runTaskAsynchronously(this, () -> writePlayer(target));
                 }
 
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
@@ -164,18 +164,17 @@ public class Main extends JavaPlugin implements Listener {
         File dataFolder = new File(getDataFolder() + "/data");
 
         if (!dataFolder.exists()) {
-                dataFolder.mkdirs();
+            dataFolder.mkdirs();
         }
 
         String legacyFilePath = getDataFolder() + "/userdata.json";
         File userdataFile = new File(legacyFilePath);
-        if(userdataFile.exists()) {
+        if (userdataFile.exists()) {
             JSONParser jsonParser = new JSONParser();
             try {
                 FileReader reader = new FileReader(legacyFilePath);
                 JSONArray players = (JSONArray) jsonParser.parse(reader);
                 reader.close();
-                List<JSONObject> list = new ArrayList<>();
                 for (Object player : players) {
                     JSONObject player_JSON = (JSONObject) player;
                     writePlayer(player_JSON);
@@ -183,7 +182,7 @@ public class Main extends JavaPlugin implements Listener {
 
                 File newFileName = new File(getDataFolder() + "/userdata_old.json");
 
-                if(!newFileName.exists()) {
+                if (!newFileName.exists()) {
                     userdataFile.renameTo(newFileName);
                 }
 
@@ -199,7 +198,7 @@ public class Main extends JavaPlugin implements Listener {
         JSONObject target = new JSONObject();
 
         String uuid = player.getUniqueId().toString();
-        int sessionOnTime =(int) (System.currentTimeMillis() - Sessions.get(uuid)) / 50;
+        int sessionOnTime = (int) (System.currentTimeMillis() - Sessions.get(uuid)) / 50;
         Sessions.remove(uuid);
 
         try {
@@ -226,14 +225,12 @@ public class Main extends JavaPlugin implements Listener {
             target.put("session", chat.ticksPlayed(player));
         }
 
-
         if (!Bukkit.getPluginManager().isPluginEnabled(this))
             writePlayer(target);
         else
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> writePlayer(target));
     }
 
-    @SuppressWarnings("unchecked")
     private void writePlayer(JSONObject target) {
         String playerPath = getPlayerPath((String) target.get("lastName"));
 
@@ -246,7 +243,7 @@ public class Main extends JavaPlugin implements Listener {
         JSONParser jsonParser = new JSONParser();
         try {
             File userdataFile = new File(playerPath);
-            if(!userdataFile.exists()) {
+            if (!userdataFile.exists()) {
                 try {
                     FileWriter writer = new FileWriter(userdataFile.getAbsoluteFile());
                     writer.write("{}");

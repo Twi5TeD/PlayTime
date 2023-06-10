@@ -14,10 +14,8 @@ import me.f64.playtime.commands.Playtime;
 import me.f64.playtime.Main;
 import me.f64.playtime.utils.TimeFormat;
 import me.f64.playtime.utils.TopPlayers;
-import org.bukkit.Statistic;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -94,10 +92,10 @@ public class Expansion extends PlaceholderExpansion {
                         JSONObject playerJSON = (JSONObject) jsonParser.parse(reader);
                         reader.close();
 
-                        TopPlayers element = new TopPlayers(playerJSON.get("lastName").toString(), playerJSON.get("uuid").toString(),
-                                Integer.parseInt(playerJSON.get("time").toString()));
+                        TopPlayers element = new TopPlayers(playerJSON.get("lastName").toString(),
+                                playerJSON.get("uuid").toString(), Integer.parseInt(playerJSON.get("time").toString()));
 
-                        if(element.name == player.getName())
+                        if (element.name == player.getName())
                             target = element;
                         allPlayers.add(element);
                     }
@@ -151,7 +149,8 @@ public class Expansion extends PlaceholderExpansion {
             return String.valueOf(new Long(week).intValue());
         }
         if (commandLabel.equals("session")) {
-            return String.valueOf(TimeFormat.getTime(Duration.of(Expansion.plugin.getPlayerSession(player.getName()), ChronoUnit.SECONDS)));
+            return String.valueOf(TimeFormat
+                    .getTime(Duration.of(Expansion.plugin.getPlayerSession(player.getName()), ChronoUnit.SECONDS)));
         }
         if (commandLabel.equals("timesjoined"))
             return String.valueOf(chat.sessionsPlayed(player));

@@ -17,7 +17,6 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import me.f64.playtime.utils.Chat;
@@ -120,7 +119,7 @@ public class Playtime implements TabExecutor {
                     reader.close();
 
                     allPlayers.add(new TopPlayers(player.get("lastName").toString(), player.get("uuid").toString(),
-                            Integer.parseInt(player.get("time").toString() )));
+                            Integer.parseInt(player.get("time").toString())));
                 }
 
                 allPlayers.sort(Comparator.comparing(e -> e.time));
